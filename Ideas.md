@@ -7,6 +7,7 @@
 - Each heat trail has a heat level that decreases over time
 - Trail is destroyed when heat level is 0
 - Enemies can only detect heat trail if the heat level is greater than their heat-sense threshold
+- Trails store a reference to the next heat trail
 
 ## Enemy
 - Spawn in waves of enemies
@@ -19,6 +20,7 @@
 
 ### Tracking State
 - This is for following heat trails of the player
+- A heat trail is "found" when the enemy collides with it
 - Rotate in direction of next trail position
 - Only track next position if heat level > heat sense threshold
 
