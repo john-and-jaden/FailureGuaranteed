@@ -34,6 +34,7 @@ public class Enemy {
   private void initRoutines() {
     routines = new Routine[3];
     for (int i = 0; i < routines.length; i++) {
+      routines[i] = new Routine();
       routines[i].dirX = random(-1, 0);
       routines[i].dirY = random(-1, 1);
       routines[i].rotationSpeed = random(-1, 1);
