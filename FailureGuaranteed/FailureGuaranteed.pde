@@ -1,8 +1,10 @@
 Player p;
 EnemyController ec;
+Timer t;
 
 void setup() {
   fullScreen();
+  t = new Timer();
   p = new Player();
   ec = new EnemyController();
 }
@@ -11,6 +13,7 @@ void draw() {
   background(255);
   ec.update();
   p.update();
+  t.update();
 }
 
 void keyPressed() {
