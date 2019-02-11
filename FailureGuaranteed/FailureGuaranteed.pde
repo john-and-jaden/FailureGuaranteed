@@ -1,9 +1,10 @@
+Player p;
+
 void setup() {
   fullScreen();
+  p = new Player();
 }
 
 void draw() {
-  background(155);
-  fill(random(255), random(255), random(255));
-  ellipse(random(width), random(height), 50, 50);
+  background(255);
 }
