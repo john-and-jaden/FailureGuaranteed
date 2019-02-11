@@ -1,11 +1,18 @@
 public class EnemyController {
   ArrayList<Enemy> enemies;
-
-  void init() {
-    enemies = new ArrayList<Enemy>(15);
-    for (int i = 0; i < enemies.size(); i++) {
+  int numberEnemies = 50;
+  
+  EnemyController() {
+    enemies = new ArrayList<Enemy>(numberEnemies);
+    for (int i = 0; i < numberEnemies; i++) {
       enemies.add(new Enemy());
-      enemies.get(i).init();
+    }
+  }
+  
+  void update() {
+    for(Enemy e: enemies) {
+     e.update(); 
+     e.display();
     }
   }
 }
