@@ -1,20 +1,47 @@
 public class Player {
   private float x, y;
-  private float r;
+  private float radius;
   private float speed;
+  private int health;
+  private float shootCooldown;
+  
+  private float shootTimer;
+  private int currentHealth;
   private float right, left, up, down;
 
   public Player() {
     x = width/2;
     y = height/2;
-    r = 30;
+    radius = 30;
     speed = 5;
+    health = 25;
+    shootCooldown = 0.25;
+    
+    currentHealth = health;
+    shootTimer = 0;
   }
 
   public void update() {
-    x = constrain(x + (right - left), r, width-r);
-    y = constrain(y + (down - up), r, height-r);
+    shootTimer += t.deltaTime;
+    x = constrain(x + (right - left), radius, width-radius);
+    y = constrain(y + (down - up), radius, height-radius);
+            
     display();
+  }
+  
+  public void takeDamage(int damage) {
+    currentHealth -= damage;
+    
+    if (currentHealth <= 0) {
+      // lose a life, go to next wave 
+    }
+  }
+  
+  public void shoot() {
+    if (shootTimer > shootCooldown) {
+      playerBullets.add(new PlayerBullet(x, y, getMouseDirection(), radius));
+      shootTimer = 0;
+    }
   }
 
   public void moveDirection(float x, float y) {
@@ -39,8 +66,12 @@ public class Player {
       down = 0;
   }
 
-  public void display() {
+  private void display() {
     fill(255, 0, 0);
-    ellipse(x, y, r*2, r*2);
+    ellipse(x, y, radius*2, radius*2);
+  }
+  
+  private PVector getMouseDirection() {
+    return new PVector(mouseX - x, mouseY - y).normalize();
   }
 }

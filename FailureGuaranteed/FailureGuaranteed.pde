@@ -1,9 +1,11 @@
 Player p;
+ArrayList<PlayerBullet> playerBullets;
 EnemyController ec;
 
 void setup() {
   fullScreen();
   p = new Player();
+  playerBullets = new ArrayList<PlayerBullet>();
   ec = new EnemyController();
 }
 
@@ -11,6 +13,9 @@ void draw() {
   background(255);
   ec.update();
   p.update();
+  for (PlayerBullet bullet : playerBullets) {
+    bullet.update(); 
+  }
 }
 
 void keyPressed() {
@@ -33,4 +38,8 @@ void keyReleased() {
     p.stopDirection(1, 0);
   if (keyCode == 'A' || keyCode == LEFT)
     p.stopDirection(-1, 0);
+}
+
+void mouseClicked() {
+  p.shoot(); 
 }
