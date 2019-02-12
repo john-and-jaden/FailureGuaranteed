@@ -1,9 +1,11 @@
 Player p;
 ArrayList<PlayerBullet> playerBullets;
 EnemyController ec;
+Timer t;
 
 void setup() {
   fullScreen();
+  t = new Timer();
   p = new Player();
   playerBullets = new ArrayList<PlayerBullet>();
   ec = new EnemyController();
@@ -11,6 +13,7 @@ void setup() {
 
 void draw() {
   background(255);
+  t.update();
   ec.update();
   p.update();
   for (PlayerBullet bullet : playerBullets) {
