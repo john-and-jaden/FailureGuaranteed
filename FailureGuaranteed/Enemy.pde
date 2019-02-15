@@ -1,20 +1,26 @@
-public class Enemy {
+public class Enemy extends DestroyableObject {
   private float x, y;
   private PVector direction;
   private float rotationSpeed;
   private float radius;
+  private int health;
   Routine[] routines;
   int currentRoutine;
   float routineTimer;
+  
+  private int currentHealth;
 
   public Enemy() {
     currentRoutine = 0;
     initRoutines();
     rotationSpeed = random(0, 1);
     radius = 10;
+    health = 5;
     direction = new PVector(random(-1, 0), random(-1, 1));
     x = width - random(0, 50);
     y = height / 2 + random(-50, 50);
+    
+    currentHealth = health;
   }
 
   public void update() {
@@ -41,6 +47,14 @@ public class Enemy {
       } else {
         currentRoutine++;
       }
+    }
+  }
+  
+  public void takeDamage(int damage) {
+    currentHealth -= damage;
+    
+    if (currentHealth <= 0 && !isFlagged()) {
+      flag();
     }
   }
 
