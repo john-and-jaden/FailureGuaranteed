@@ -10,6 +10,7 @@ public class Player {
   private float right, left, up, down;
 
   public Player() {
+    // You can modify this
     x = width/2;
     y = height/2;
     radius = 20;
@@ -17,6 +18,7 @@ public class Player {
     health = 25;
     shootCooldown = 0.5;
     
+    // Don't modify this
     currentHealth = health;
     shootTimer = 0;
   }
