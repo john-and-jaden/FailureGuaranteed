@@ -1,5 +1,6 @@
 Player p;
 ArrayList<PlayerBullet> playerBullets;
+ArrayList<HeatTrailParticle> heatTrail;
 EnemyController ec;
 Timer t;
 
