@@ -16,7 +16,6 @@ public class PlayerBullet extends DestroyableObject {
   }
   
   public void update() {
-    println("(" + x + ", " + y + ")");
     x += direction.x * speed;
     y += direction.y * speed;
     
