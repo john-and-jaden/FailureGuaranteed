@@ -15,30 +15,27 @@ public class Enemy extends DestroyableObject {
     initRoutines();
     rotationSpeed = random(0, 1);
     radius = 10;
+    direction = new PVector(-1, 0);
     health = 5;
-    direction = new PVector(random(-1, 0), random(-1, 1));
     x = width - random(0, 50);
-    y = height / 2 + random(-50, 50);
-    
+    y = height / 2 + random(-50, 50); 
     currentHealth = health;
   }
 
   public void update() {
-    rotationSpeed = routines[currentRoutine].rotationSpeed;
-    direction.set(routines[currentRoutine].dirX, routines[currentRoutine].dirY);
-    updateRoutinesAndTimer();
-    if (x < 0 || x > width) {
+    updateCurrentRoutineAndTimer();
+    if (x <= radius || x >= width - radius) {
       direction.x = - direction.x;
     }
-    if (y < 0 || y > height) {
+    if (y <= radius || y >= height - radius) {
       direction.y = - direction.y;
     }
-    x += direction.x;
-    y += direction.y;
-    direction.rotate(0.1 * rotationSpeed);
+    direction.rotate(0.1 * routines[currentRoutine].rotationSpeed);
+    x = constrain(x + direction.x * routines[currentRoutine].forwardSpeed, radius, width - radius);
+    y = constrain(y + direction.y * routines[currentRoutine].forwardSpeed, radius, height - radius);
   }
   
-  public void updateRoutinesAndTimer() {
+  public void updateCurrentRoutineAndTimer() {
     routineTimer += t.deltaTime;
     if (routineTimer > routines[currentRoutine].duration) {
       routineTimer = 0;
@@ -52,7 +49,6 @@ public class Enemy extends DestroyableObject {
   
   public void takeDamage(int damage) {
     currentHealth -= damage;
-    
     if (currentHealth <= 0 && !isFlagged()) {
       flag();
     }
@@ -60,24 +56,22 @@ public class Enemy extends DestroyableObject {
 
   public void display() {
     fill(255, 0, 0);
-    ellipse(x, y, radius, radius);
+    ellipse(x, y, radius * 2, radius * 2);
   }
-
+  
   private void initRoutines() {
     routines = new Routine[3];
     for (int i = 0; i < routines.length; i++) {
       routines[i] = new Routine();
-      routines[i].dirX = random(-1, 0);
-      routines[i].dirY = random(-1, 1);
-      routines[i].rotationSpeed = random(-10, 10);
-      routines[i].duration = 3;
+      routines[i].forwardSpeed = random(0, 20);
+      routines[i].rotationSpeed = random(0, 2);
+      routines[i].duration = (int)random(1, 4);
     }
   }
 
   private class Routine {
     int duration;
-    float dirX;
-    float dirY;
+    float forwardSpeed;
     float rotationSpeed;
   }
 }
