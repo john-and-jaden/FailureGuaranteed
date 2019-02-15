@@ -14,9 +14,11 @@ void setup() {
 
 void draw() {
   background(255);
+  
   t.update();
   ec.update();
   p.update();
+  
   ArrayList<PlayerBullet> flaggedPlayerBullets = new ArrayList<PlayerBullet>();
   for (PlayerBullet bullet : playerBullets) {
     bullet.update();

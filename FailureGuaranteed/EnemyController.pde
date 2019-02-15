@@ -1,8 +1,12 @@
 public class EnemyController {
   ArrayList<Enemy> enemies;
-  int numberEnemies = 1;
+  int numberEnemies;
 
   EnemyController() {
+    // You can modify this
+    numberEnemies = 1;
+    
+    // Don't modify this
     enemies = new ArrayList<Enemy>(numberEnemies);
     for (int i = 0; i < numberEnemies; i++) {
       enemies.add(new Enemy());
