@@ -1,11 +1,6 @@
-public class PlayerBullet extends DestroyableObject {
-  private float x, y;
-  private float radius;
-  private float speed;
-  private int damage;
-  private PVector direction;
-  
+public class PlayerBullet extends Bullet {
   public PlayerBullet(float x, float y, PVector direction, float spawnDistance) {
+    super(x, y, direction, spawnDistance);
     // You can modify this
     radius = 5;
     speed = 5;
