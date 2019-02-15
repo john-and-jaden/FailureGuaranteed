@@ -10,13 +10,16 @@ public class Enemy extends DestroyableObject {
   private int currentHealth;
 
   public Enemy() {
-    currentRoutine = 0;
-    initRoutines();
-    radius = 5;
-    direction = new PVector(-1, 0);
-    health = 5;
+    // You can change this
     x = width - random(0, 50);
     y = height / 2 + random(-50, 50); 
+    direction = new PVector(-1, 0);
+    radius = 5;
+    health = 5;
+    
+    // Don't change this
+    currentRoutine = 0;
+    initRoutines();
     currentHealth = health;
   }
 

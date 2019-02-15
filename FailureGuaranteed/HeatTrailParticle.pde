@@ -4,9 +4,11 @@ public class HeatTrailParticle {
   float heatDecay;
   
   public HeatTrailParticle(float x, float y) {
+    // You can modify this
     heatLevel = 100;
     heatDecay = 1;
     
+    // Don't modify this
     this.x = x;
     this.y = y;
   }
