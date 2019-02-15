@@ -1,21 +1,22 @@
 Player p;
 ArrayList<PlayerBullet> playerBullets;
-ArrayList<HeatTrailParticle> heatTrail;
+HeatTrail heatTrail;
 EnemyController ec;
-Timer t;
+Timer time;
 
 void setup() {
   fullScreen();
-  t = new Timer();
+  time = new Timer();
   p = new Player();
   playerBullets = new ArrayList<PlayerBullet>();
+  heatTrail = new HeatTrail();
   ec = new EnemyController();
 }
 
 void draw() {
   background(255);
   
-  t.update();
+  time.update();
   ec.update();
   p.update();
   

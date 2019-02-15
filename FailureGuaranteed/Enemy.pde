@@ -37,7 +37,7 @@ public class Enemy extends DestroyableObject {
   }
   
   public void updateCurrentRoutineAndTimer() {
-    routineTimer += t.deltaTime;
+    routineTimer += time.deltaTime;
     if (routineTimer > routines[currentRoutine].duration) {
       routineTimer = 0;
       if (currentRoutine == routines.length - 1) {
