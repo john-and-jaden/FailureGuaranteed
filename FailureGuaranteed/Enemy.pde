@@ -1,7 +1,6 @@
 public class Enemy extends DestroyableObject {
   private float x, y;
   private PVector direction;
-  private float rotationSpeed;
   private float radius;
   private int health;
   Routine[] routines;
@@ -13,8 +12,7 @@ public class Enemy extends DestroyableObject {
   public Enemy() {
     currentRoutine = 0;
     initRoutines();
-    rotationSpeed = random(0, 1);
-    radius = 10;
+    radius = 5;
     direction = new PVector(-1, 0);
     health = 5;
     x = width - random(0, 50);
@@ -63,8 +61,8 @@ public class Enemy extends DestroyableObject {
     routines = new Routine[3];
     for (int i = 0; i < routines.length; i++) {
       routines[i] = new Routine();
-      routines[i].forwardSpeed = random(0, 20);
-      routines[i].rotationSpeed = random(0, 2);
+      routines[i].forwardSpeed = random(0, 10);
+      routines[i].rotationSpeed = random(0, 1);
       routines[i].duration = (int)random(1, 4);
     }
   }
