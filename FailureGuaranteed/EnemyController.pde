@@ -8,11 +8,15 @@ public class EnemyController {
       enemies.add(new Enemy());
     }
   }
-
+  
   void update() {
+    ArrayList<Enemy> flaggedEnemies = new ArrayList<Enemy>();
     for (Enemy e : enemies) {
       e.update(); 
       e.display();
+      if (e.isFlagged())
+        flaggedEnemies.add(e);
     }
+    enemies.removeAll(flaggedEnemies);
   }
 }

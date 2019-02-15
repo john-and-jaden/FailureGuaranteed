@@ -1,4 +1,4 @@
-public class PlayerBullet {
+public class PlayerBullet extends DestroyableObject {
   private float x, y;
   private float radius;
   private float speed;
@@ -6,12 +6,13 @@ public class PlayerBullet {
   private PVector direction;
   
   public PlayerBullet(float x, float y, PVector direction, float spawnDistance) {
+    radius = 5;
+    speed = 5;
+    damage = 1;
+    
     this.x = x + (direction.x * (radius + spawnDistance));
     this.y = y + (direction.y * (radius + spawnDistance));
     this.direction = direction;
-    
-    speed = 5;
-    damage = 1;
   }
   
   public void update() {
@@ -19,14 +20,22 @@ public class PlayerBullet {
     y += direction.y * speed;
     
     if (isOffScreen()) {
-      //destroy self 
+      flag();
     }
     
     for (Enemy e : ec.enemies) {
       if (dist(x, y, e.x, e.y) < radius + e.radius) {
-        //damage enemy
+        e.takeDamage(damage);
+        flag();
       }
     }
+    
+    display();
+  }
+  
+  private void display() {
+    fill(0, 0, 255);
+    ellipse(x, y, radius * 2, radius * 2);
   }
   
   private boolean isOffScreen() {

@@ -16,9 +16,13 @@ void draw() {
   t.update();
   ec.update();
   p.update();
+  ArrayList<PlayerBullet> flaggedPlayerBullets = new ArrayList<PlayerBullet>();
   for (PlayerBullet bullet : playerBullets) {
-    bullet.update(); 
+    bullet.update();
+    if (bullet.isFlagged())
+      flaggedPlayerBullets.add(bullet);
   }
+  playerBullets.removeAll(flaggedPlayerBullets);
 }
 
 void keyPressed() {
@@ -44,5 +48,5 @@ void keyReleased() {
 }
 
 void mouseClicked() {
-  p.shoot(); 
+  p.shoot();
 }

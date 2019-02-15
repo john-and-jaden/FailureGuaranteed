@@ -12,10 +12,10 @@ public class Player {
   public Player() {
     x = width/2;
     y = height/2;
-    radius = 30;
+    radius = 20;
     speed = 5;
     health = 25;
-    shootCooldown = 0.25;
+    shootCooldown = 0.5;
     
     currentHealth = health;
     shootTimer = 0;
@@ -44,6 +44,7 @@ public class Player {
     }
   }
 
+  // called from keyPressed() to set the state of the movement keys
   public void moveDirection(float x, float y) {
     if (x == 1)
       right = speed;
@@ -54,7 +55,8 @@ public class Player {
     else if (y == -1)
       down = speed;
   }
-
+  
+  // called from keyPressed() to set the state of the movement keys
   public void stopDirection(float x, float y) {
     if (x == 1)
       right = 0;
