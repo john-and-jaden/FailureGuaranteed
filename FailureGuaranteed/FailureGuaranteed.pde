@@ -1,7 +1,8 @@
 Player player;
 ArrayList<PlayerBullet> playerBullets;
 ArrayList<EnemyBullet> enemyBullets;
-ArrayList<HeatTrailParticle> heatTrail;
+HeatTrail heatTrail;
+//ArrayList<HeatTrailParticle> heatTrail;
 EnemyController enemyController;
 Timer timer;
 
@@ -11,28 +12,30 @@ void setup() {
   player = new Player();
   playerBullets = new ArrayList<PlayerBullet>();
   enemyBullets = new ArrayList<EnemyBullet>();
+  heatTrail = new HeatTrail();
   enemyController = new EnemyController();
 }
 
-void draw() {
+void draw() { 
   background(255);
-  
   timer.update();
   enemyController.update();
   player.update();
-  
+
   ArrayList<PlayerBullet> flaggedPlayerBullets = new ArrayList<PlayerBullet>();
   for (PlayerBullet bullet : playerBullets) {
     bullet.update();
-    if (bullet.isFlagged())
+    if (bullet.isFlagged()) {
       flaggedPlayerBullets.add(bullet);
+    }
   }
-  
+
   ArrayList<EnemyBullet> flaggedEnemyBullets = new ArrayList<EnemyBullet>();
   for (EnemyBullet bullet : enemyBullets) {
     bullet.update();
-    if (bullet.isFlagged())
+    if (bullet.isFlagged()) {
       flaggedEnemyBullets.add(bullet);
+    }
   }
   enemyBullets.removeAll(flaggedEnemyBullets);
 }

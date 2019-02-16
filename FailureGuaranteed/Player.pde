@@ -4,8 +4,10 @@ public class Player {
   private float speed;
   private int health;
   private float shootCooldown;
+  private float trailSpawnCooldown;
   
   private float shootTimer;
+  private float trailSpawnTimer;
   private int currentHealth;
   private float right, left, up, down;
 
@@ -17,17 +19,29 @@ public class Player {
     speed = 5;
     health = 25;
     shootCooldown = 0.5;
+    trailSpawnCooldown = 0.25;
     
     // Don't modify this
     currentHealth = health;
     shootTimer = 0;
+    trailSpawnTimer = 0;
   }
 
   public void update() {
+    //shootTimer += timer.deltaTime;
+    //x = constrain(x + (right - left), radius, width-radius);
+    //y = constrain(y + (down - up), radius, height-radius);
     shootTimer += timer.deltaTime;
-    x = constrain(x + (right - left), radius, width-radius);
-    y = constrain(y + (down - up), radius, height-radius);
-            
+    trailSpawnTimer += timer.deltaTime;
+    float newX = constrain(x + (right - left), radius, width-radius);
+    float newY = constrain(y + (down - up), radius, height-radius);
+    boolean hasMoved = newX != x || newY != y;
+    if (hasMoved && trailSpawnTimer >= trailSpawnCooldown) {
+      heatTrail.spawnParticle(x, y);
+      trailSpawnTimer = 0;
+    }
+    x = newX;
+    y = newY;
     display();
   }
   
