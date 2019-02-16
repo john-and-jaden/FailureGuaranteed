@@ -5,15 +5,15 @@ public class HeatTrailParticle extends DestroyableObject {
   float heatDecay;
   HeatTrailParticle next;
   
-  public HeatTrailParticle(float x, float y, float size) {
+  public HeatTrailParticle(float x, float y) {
     // You can modify this
     heatLevel = 100;
     heatDecay = 1;
+    size = 5;
     
     // Don't modify this
     this.x = x;
     this.y = y;
-    this.size = size;
   }
   
   public void update() {

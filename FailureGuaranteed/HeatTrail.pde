@@ -18,7 +18,7 @@ public class HeatTrail {
   }
   
   public void spawnParticle(float x, float y) {
-    HeatTrailParticle particle = new HeatTrailParticle(x, y, 10); // SIZE ADDED BY JP TO CORRECT AN ERROR
+    HeatTrailParticle particle = new HeatTrailParticle(x, y);
     particles.add(particle);
     if (last != null)
       last.next = particle;

@@ -17,7 +17,7 @@ public class Enemy extends DestroyableObject {
     direction = new PVector(-1, 0);
     radius = 5;
     health = 5;
-    shootCooldown = 1;
+    shootCooldown = 0.01;
 
     // Don't change this
     currentRoutine = 0;

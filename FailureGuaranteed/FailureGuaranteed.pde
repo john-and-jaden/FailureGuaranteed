@@ -2,7 +2,6 @@ Player player;
 ArrayList<PlayerBullet> playerBullets;
 ArrayList<EnemyBullet> enemyBullets;
 HeatTrail heatTrail;
-//ArrayList<HeatTrailParticle> heatTrail;
 EnemyController enemyController;
 Timer timer;
 
