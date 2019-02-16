@@ -24,7 +24,7 @@ public class Player {
   }
 
   public void update() {
-    shootTimer += t.deltaTime;
+    shootTimer += timer.deltaTime;
     x = constrain(x + (right - left), radius, width-radius);
     y = constrain(y + (down - up), radius, height-radius);
             
@@ -73,6 +73,10 @@ public class Player {
   private void display() {
     fill(255, 0, 0);
     ellipse(x, y, radius*2, radius*2);
+    textSize(25);
+    textAlign(CENTER);
+    fill(0);
+    text(currentHealth, x, y);
   }
   
   private PVector getMouseDirection() {

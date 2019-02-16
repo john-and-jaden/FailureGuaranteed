@@ -1,23 +1,25 @@
-Player p;
+Player player;
 ArrayList<PlayerBullet> playerBullets;
+ArrayList<EnemyBullet> enemyBullets;
 ArrayList<HeatTrailParticle> heatTrail;
-EnemyController ec;
-Timer t;
+EnemyController enemyController;
+Timer timer;
 
 void setup() {
   fullScreen();
-  t = new Timer();
-  p = new Player();
+  timer = new Timer();
+  player = new Player();
   playerBullets = new ArrayList<PlayerBullet>();
-  ec = new EnemyController();
+  enemyBullets = new ArrayList<EnemyBullet>();
+  enemyController = new EnemyController();
 }
 
 void draw() {
   background(255);
   
-  t.update();
-  ec.update();
-  p.update();
+  timer.update();
+  enemyController.update();
+  player.update();
   
   ArrayList<PlayerBullet> flaggedPlayerBullets = new ArrayList<PlayerBullet>();
   for (PlayerBullet bullet : playerBullets) {
@@ -25,31 +27,38 @@ void draw() {
     if (bullet.isFlagged())
       flaggedPlayerBullets.add(bullet);
   }
-  playerBullets.removeAll(flaggedPlayerBullets);
+  
+  ArrayList<EnemyBullet> flaggedEnemyBullets = new ArrayList<EnemyBullet>();
+  for (EnemyBullet bullet : enemyBullets) {
+    bullet.update();
+    if (bullet.isFlagged())
+      flaggedEnemyBullets.add(bullet);
+  }
+  enemyBullets.removeAll(flaggedEnemyBullets);
 }
 
 void keyPressed() {
   if (keyCode == 'W' || keyCode == UP)
-    p.moveDirection(0, 1);
+    player.moveDirection(0, 1);
   if (keyCode == 'S' || keyCode == DOWN)
-    p.moveDirection(0, -1);
+    player.moveDirection(0, -1);
   if (keyCode == 'D' || keyCode == RIGHT)
-    p.moveDirection(1, 0);
+    player.moveDirection(1, 0);
   if (keyCode == 'A' || keyCode == LEFT)
-    p.moveDirection(-1, 0);
+    player.moveDirection(-1, 0);
 }
 
 void keyReleased() {
   if (keyCode == 'W' || keyCode == UP)
-    p.stopDirection(0, 1);
+    player.stopDirection(0, 1);
   if (keyCode == 'S' || keyCode == DOWN)
-    p.stopDirection(0, -1);
+    player.stopDirection(0, -1);
   if (keyCode == 'D' || keyCode == RIGHT)
-    p.stopDirection(1, 0);
+    player.stopDirection(1, 0);
   if (keyCode == 'A' || keyCode == LEFT)
-    p.stopDirection(-1, 0);
+    player.stopDirection(-1, 0);
 }
 
 void mouseClicked() {
-  p.shoot();
+  player.shoot();
 }
