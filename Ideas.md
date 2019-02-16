@@ -42,3 +42,13 @@
 - Attack rate
 #### Defense
 - Health
+
+
+
+
+
+|               | Patrol | Tracking | Attacking |   |
+|---------------|:------:|---------:|-----------|---|
+| forwardSpeed  |        |          |           |   |
+| rotationSpeed |        |          |           |   |
+| shootCooldown |        |          |           |   |
