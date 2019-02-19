@@ -30,7 +30,7 @@
 
 ### Attributes to Randomize
 #### Movement
-- Movement Speed (+/- is direction, -max to +max, distance/second)
+- Forward Speed (+/- is direction, -max to +max, distance/second)
 - Rotation Speed (+/- is direction, -max to +max, angle/second)
 #### Vision
 - Forward Vision Length (0 to max, distance)
@@ -39,16 +39,22 @@
 #### Offense (DIFFERENT FOR ATTACK/TRACK/PATROL)
 - Bullet damage
 - Bullet speed
-- Attack rate
+- Shoot coolDown
 #### Defense
 - Health
 
 
+## quota-ness of different attributes
 
+- Non quota means that maxing out the attribute is not necessarily the best strategy for the enemy
+- Quota means that maxing it out would always be the best strategy for the enemy
 
-
-|               | Patrol | Tracking | Attacking |   |
-|---------------|:------:|---------:|-----------|---|
-| forwardSpeed  |        |          |           |   |
-| rotationSpeed |        |          |           |   |
-| shootCooldown |        |          |           |   |
+|                            |   Patrol  |  Tracking | Attacking |
+|----------------------------|:---------:|----------:|-----------|
+| forwardSpeed               | non-quota | non-quota | non-quota |
+| rotationSpeed              | non-quota | quota     | quota     |
+| forward vision length      | quota     | quota     | quota     |
+| proximity detection radius | quota     | quota     | quota     |
+| heat sense threshold       | quota     | quota     | quota     |
+| shootCooldown              | quota     | quota     | quota     |
+| health                     | quota     | quota     | quota     |
