@@ -44,11 +44,13 @@
 - Health
 
 
+## quota-ness of different attributes
 
+- Non quota means that maxing out the attribute is not necessarily the best strategy for the enemy
+- Quota means that maxing it out would always be the best strategy for the enemy
 
-
-|               | Patrol | Tracking | Attacking |   |
-|---------------|:------:|---------:|-----------|---|
-| forwardSpeed  |        |          |           |   |
-| rotationSpeed |        |          |           |   |
-| shootCooldown |        |          |           |   |
+|               | Patrol | Tracking | Attacking |
+|---------------|:------:|---------:|-----------|
+| forwardSpeed  |        |          |           |
+| rotationSpeed |        |          |           |
+| shootCooldown |        |          |           |
