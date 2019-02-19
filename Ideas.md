@@ -30,7 +30,7 @@
 
 ### Attributes to Randomize
 #### Movement
-- Movement Speed (+/- is direction, -max to +max, distance/second)
+- Forward Speed (+/- is direction, -max to +max, distance/second)
 - Rotation Speed (+/- is direction, -max to +max, angle/second)
 #### Vision
 - Forward Vision Length (0 to max, distance)
@@ -39,7 +39,7 @@
 #### Offense (DIFFERENT FOR ATTACK/TRACK/PATROL)
 - Bullet damage
 - Bullet speed
-- Attack rate
+- Shoot coolDown
 #### Defense
 - Health
 
