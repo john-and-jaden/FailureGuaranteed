@@ -14,10 +14,9 @@ public class EnemyController {
   }
   
   void update() {
-    ArrayList<Enemy> flaggedEnemies = new ArrayList<Enemy>();
+    ArrayList<Enemy> flaggedEnemies = new ArrayList<Enemy>();  
     for (Enemy e : enemies) {
       e.update(); 
-      e.display();
       if (e.isFlagged())
         flaggedEnemies.add(e);
     }

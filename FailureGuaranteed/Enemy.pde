@@ -17,7 +17,7 @@ public class Enemy extends DestroyableObject {
     direction = new PVector(-1, 0);
     radius = 5;
     health = 5;
-    shootCooldown = 0.01;
+    shootCooldown = 0.1;
 
     // Don't change this
     currentRoutine = 0;
@@ -37,7 +37,9 @@ public class Enemy extends DestroyableObject {
     direction.rotate(0.1 * routines[currentRoutine].rotationSpeed);
     x = constrain(x + direction.x * routines[currentRoutine].forwardSpeed, radius, width - radius);
     y = constrain(y + direction.y * routines[currentRoutine].forwardSpeed, radius, height - radius);
+    shootCooldown = routines[currentRoutine].shootCooldown;
     shoot();
+    display();
   }
 
   public void updateCurrentRoutineAndTimer() {
@@ -58,30 +60,39 @@ public class Enemy extends DestroyableObject {
       flag();
     }
   }
-
-  public void display() {
+  
+  private void display() {
     fill(255, 0, 0);
     line(x, y, x + direction.x * 50, y + direction.y * 50);
     ellipse(x, y, radius * 2, radius * 2);
   }
-
+  
   private void initRoutines() {
     routines = new Routine[3];
     for (int i = 0; i < routines.length; i++) {
+      // routine specific
       routines[i] = new Routine();
+      routines[i].duration = (int) random(1, 4);
+      
+      // movement specific
       routines[i].forwardSpeed = random(0, 5);
       routines[i].rotationSpeed = random(0, 0.1);
-      routines[i].duration = (int)random(1, 4);
+      
+      // detection & vision specific
+      
+      
+      
+      routines[i].shootCooldown = random(0.01, 0.7);
     }
   }
-
+  
   public void shoot() {
     if (shootTimer > shootCooldown) {
       enemyBullets.add(new EnemyBullet(x, y, direction.copy(), radius));
       shootTimer = 0;
     }
   }
-
+  
   private class Routine {
     // routine specific
     int duration;
@@ -90,7 +101,15 @@ public class Enemy extends DestroyableObject {
     float forwardSpeed;
     float rotationSpeed;
     
-    // bullet specific
+    // detection & vision specific
+    float forwardVisionLength;
+    float proximityDetectionRadius;
+    float heatSenseThreshold;
     
+    // attack specific
+    float shootCooldown;
+    
+    // health
+    int health;
   }
 }
