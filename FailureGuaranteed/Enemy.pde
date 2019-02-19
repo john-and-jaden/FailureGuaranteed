@@ -17,7 +17,7 @@ public class Enemy extends DestroyableObject {
     direction = new PVector(-1, 0);
     radius = 5;
     health = 5;
-    shootCooldown = 0.01;
+    shootCooldown = 0.1;
 
     // Don't change this
     currentRoutine = 0;
@@ -37,7 +37,9 @@ public class Enemy extends DestroyableObject {
     direction.rotate(0.1 * routines[currentRoutine].rotationSpeed);
     x = constrain(x + direction.x * routines[currentRoutine].forwardSpeed, radius, width - radius);
     y = constrain(y + direction.y * routines[currentRoutine].forwardSpeed, radius, height - radius);
+    shootCooldown = routines[currentRoutine].shootCooldown;
     shoot();
+    display();
   }
 
   public void updateCurrentRoutineAndTimer() {
@@ -59,7 +61,7 @@ public class Enemy extends DestroyableObject {
     }
   }
 
-  public void display() {
+  private void display() {
     fill(255, 0, 0);
     line(x, y, x + direction.x * 50, y + direction.y * 50);
     ellipse(x, y, radius * 2, radius * 2);
@@ -72,6 +74,7 @@ public class Enemy extends DestroyableObject {
       routines[i].forwardSpeed = random(0, 5);
       routines[i].rotationSpeed = random(0, 0.1);
       routines[i].duration = (int)random(1, 4);
+      routines[i].shootCooldown = random(0.01, 0.7);
     }
   }
 
@@ -91,6 +94,6 @@ public class Enemy extends DestroyableObject {
     float rotationSpeed;
     
     // bullet specific
-    
+    float shootCooldown;
   }
 }
