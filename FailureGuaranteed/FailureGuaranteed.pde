@@ -8,10 +8,10 @@ Timer timer;
 void setup() {
   fullScreen();
   timer = new Timer();
+  heatTrail = new HeatTrail();
   player = new Player();
   playerBullets = new ArrayList<PlayerBullet>();
   enemyBullets = new ArrayList<EnemyBullet>();
-  heatTrail = new HeatTrail();
   enemyController = new EnemyController();
 }
 
@@ -19,6 +19,7 @@ void draw() {
   background(255);
   timer.update();
   enemyController.update();
+  heatTrail.update();
   player.update();
 
   ArrayList<PlayerBullet> flaggedPlayerBullets = new ArrayList<PlayerBullet>();
@@ -61,6 +62,6 @@ void keyReleased() {
     player.stopDirection(-1, 0);
 }
 
-void mouseClicked() {
+void mousePressed() {
   player.shoot();
 }

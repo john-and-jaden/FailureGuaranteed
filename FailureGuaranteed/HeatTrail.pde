@@ -11,7 +11,7 @@ public class HeatTrail {
     ArrayList<HeatTrailParticle> flaggedParticles = new ArrayList<HeatTrailParticle>();
     for (HeatTrailParticle particle : particles) {
       particle.update(); 
-      if (particle.isFlagged()) 
+      if (particle.isFlagged())
         flaggedParticles.add(particle);
     }
     particles.removeAll(flaggedParticles);

@@ -1,19 +1,24 @@
 public class HeatTrailParticle extends DestroyableObject {
   float x, y;
   float size;
-  float heatLevel;
+  float maxHeatLevel;
   float heatDecay;
+  int numDisplayParticles;
   HeatTrailParticle next;
+  
+  float heatLevel;
   
   public HeatTrailParticle(float x, float y) {
     // You can modify this
-    heatLevel = 100;
+    size = 40;
+    maxHeatLevel = 200;
     heatDecay = 1;
-    size = 5;
+    numDisplayParticles = 4;
     
     // Don't modify this
     this.x = x;
     this.y = y;
+    heatLevel = maxHeatLevel;
   }
   
   public void update() {
@@ -21,12 +26,19 @@ public class HeatTrailParticle extends DestroyableObject {
     
     if (heatLevel <= 0)
       flag();
+    
+    display();
   }
   
-  public void display() {
-    stroke(255, 0, 0);
-    strokeWeight(size);
-    strokeCap(PROJECT);
-    point(x, y);
+  private void display() {
+    for (int i = 0; i < numDisplayParticles; i++) {
+      float yellow = map(heatLevel, maxHeatLevel, 0, 50, 200);
+      float t = map(i, 0, numDisplayParticles, 20, 255);
+      stroke(255, yellow, 0, t);
+      float s = map(i, 0, numDisplayParticles, size, 3);
+      s *= norm(heatLevel, 0, maxHeatLevel);
+      strokeWeight(s);
+      point(x, y);
+    }
   }
 }
