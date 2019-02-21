@@ -3,12 +3,15 @@ public class Enemy extends DestroyableObject {
   private PVector direction;
   private float radius;
   private int health;
-  Routine[] routines;
   int currentRoutine;
   float routineTimer;
   private float shootCooldown;
   private float shootTimer;
   private int currentHealth;
+  
+  EnemyState patrolState;
+  EnemyState trackingState;
+  EnemyState attackingState;
   
   public Enemy() {
     // You can change this
@@ -18,13 +21,13 @@ public class Enemy extends DestroyableObject {
     radius = 5;
     health = 5;
     shootCooldown = 0.1;
-
+    
     // Don't change this
     currentRoutine = 0;
     initRoutines();
     currentHealth = health;
   }
-  
+
   public void update() {
     shootTimer += timer.deltaTime;
     updateCurrentRoutineAndTimer();
@@ -72,44 +75,58 @@ public class Enemy extends DestroyableObject {
     for (int i = 0; i < routines.length; i++) {
       // routine specific
       routines[i] = new Routine();
-      routines[i].duration = (int) random(1, 4);
-      
-      // movement specific
-      routines[i].forwardSpeed = random(0, 5);
-      routines[i].rotationSpeed = random(0, 0.1);
-      
-      // detection & vision specific
-      
-      
-      
-      routines[i].shootCooldown = random(0.01, 0.7);
+      initRoutine(routines[i]);
     }
   }
-  
+
+  private void initRoutine(Routine routine) {
+    // you can change tweak those parameters
+    int quota = 100;
+    int maxValue = 50;
+    int remainder = quota;
+    int unassigned = 3;
+
+    // generate array of numbers
+    int[] array = new int[5];
+    int currentIndex = 0;
+    while (remainder > 0) {
+      float assigningValue = (int) random(1, constrain(remainder - unassigned, 1, maxValue - array[currentIndex]) + 1);
+      array[currentIndex] += assigningValue;
+      unassigned--;
+      remainder -= assigningValue;
+      currentIndex++;
+      if (currentIndex > 4) {
+        currentIndex = 0;
+      }
+    }
+
+    // randomize array order
+    for (int i = 0; i < array.length; i++) {
+      int newIndex = (int)random(0, array.length);
+      int temp = array[i];
+      array[i] = array[newIndex];
+      array[newIndex] = temp;
+    }
+
+    // assign each value from the array to one of the quota values in the routine
+    routine.forwardVisionLength = array[0];
+    routine.proximityDetectionRadius = array[1];
+    routine.heatSenseThreshold = array[2];
+    routine.shootCooldown = 25 / array[3];
+    routine.health = array[4];
+    
+    // assign the non-quota values
+    routine.duration = (int)random(1, 5);
+    routine.forwardSpeed = random(0, 10);
+    routine.rotationSpeed = random(0, 5);
+  }
+
+
   public void shoot() {
     if (shootTimer > shootCooldown) {
       enemyBullets.add(new EnemyBullet(x, y, direction.copy(), radius));
       shootTimer = 0;
     }
   }
-  
-  private class Routine {
-    // routine specific
-    int duration;
-    
-    // movement specific
-    float forwardSpeed;
-    float rotationSpeed;
-    
-    // detection & vision specific
-    float forwardVisionLength;
-    float proximityDetectionRadius;
-    float heatSenseThreshold;
-    
-    // attack specific
-    float shootCooldown;
-    
-    // health
-    int health;
-  }
+
 }
