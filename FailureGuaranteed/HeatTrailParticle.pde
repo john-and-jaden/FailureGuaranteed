@@ -1,16 +1,16 @@
 public class HeatTrailParticle extends DestroyableObject {
-  float x, y;
-  float size;
-  float maxHeatLevel;
-  float heatDecay;
-  int numDisplayParticles;
-  HeatTrailParticle next;
+  public float x, y;
+  public float radius;
+  public float maxHeatLevel;
+  public float heatDecay;
+  public int numDisplayParticles;
+  public HeatTrailParticle next;
   
-  float heatLevel;
+  public float heatLevel;
   
   public HeatTrailParticle(float x, float y) {
     // You can modify this
-    size = 40;
+    radius = 20;
     maxHeatLevel = 200;
     heatDecay = 1;
     numDisplayParticles = 4;
@@ -35,7 +35,7 @@ public class HeatTrailParticle extends DestroyableObject {
       float yellow = map(heatLevel, maxHeatLevel, 0, 50, 200);
       float t = map(i, 0, numDisplayParticles, 20, 255);
       stroke(255, yellow, 0, t);
-      float s = map(i, 0, numDisplayParticles, size, 3);
+      float s = map(i, 0, numDisplayParticles, radius, 3);
       s *= norm(heatLevel, 0, maxHeatLevel);
       strokeWeight(s);
       point(x, y);

@@ -1,6 +1,6 @@
 public class HeatTrail {
-  ArrayList<HeatTrailParticle> particles;
-  HeatTrailParticle last;
+  public ArrayList<HeatTrailParticle> particles;
+  private HeatTrailParticle last;
   
   public HeatTrail() {
     // Don't modify this

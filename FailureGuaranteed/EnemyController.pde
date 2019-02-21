@@ -1,6 +1,6 @@
 public class EnemyController {
-  ArrayList<Enemy> enemies;
-  int numberEnemies;
+  public ArrayList<Enemy> enemies;
+  private int numberEnemies;
 
   EnemyController() {
     // You can modify this

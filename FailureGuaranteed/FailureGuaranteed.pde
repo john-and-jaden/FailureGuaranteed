@@ -6,7 +6,8 @@ EnemyController enemyController;
 Timer timer;
 
 void setup() {
-  fullScreen();
+  //fullScreen();
+  size(1600, 800);
   timer = new Timer();
   heatTrail = new HeatTrail();
   player = new Player();
