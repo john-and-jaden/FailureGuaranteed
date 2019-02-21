@@ -47,7 +47,7 @@
 ## quota-ness of different attributes
 
 - Non quota means that maxing out the attribute is not necessarily the best strategy for the enemy (example: in tracking mode, the enemy wants to be slow enough to follow the heat trail)
-- Quota means that maxing it out would always be the best strategy for the enemy
+- Quota means that maxing it out would always be the best strategy for the enemy (example: having more health is always good for the enemy)
 
 |                            |   Patrol  |  Tracking | Attacking |
 |----------------------------|:---------:|----------:|-----------|
