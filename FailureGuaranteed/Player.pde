@@ -18,8 +18,8 @@ public class Player {
     radius = 20;
     speed = 5;
     health = 25;
-    shootCooldown = 0.5;
-    trailSpawnCooldown = 0.25;
+    shootCooldown = 0.2;
+    trailSpawnCooldown = 0;
     
     // Don't modify this
     currentHealth = health;
@@ -28,9 +28,6 @@ public class Player {
   }
 
   public void update() {
-    //shootTimer += timer.deltaTime;
-    //x = constrain(x + (right - left), radius, width-radius);
-    //y = constrain(y + (down - up), radius, height-radius);
     shootTimer += timer.deltaTime;
     trailSpawnTimer += timer.deltaTime;
     float newX = constrain(x + (right - left), radius, width-radius);
@@ -85,10 +82,12 @@ public class Player {
   }
 
   private void display() {
-    fill(255, 0, 0);
+    fill(0, 255, 200);
+    stroke(0);
+    strokeWeight(2);
     ellipse(x, y, radius*2, radius*2);
-    textSize(25);
-    textAlign(CENTER);
+    textSize(20);
+    textAlign(CENTER, CENTER);
     fill(0);
     text(currentHealth, x, y);
   }
