@@ -7,8 +7,11 @@ public class Enemy extends DestroyableObject {
   private int health;
   private float shootCooldown;
   private float disengageDelay;
+  private float attackVisionLength;
+  private float attackVisionAngle;
   private float forwardVisionLength;
   private float proximityDetectionRadius;
+  private float heatVisionLength;
   private float heatSenseThreshold;
   
   Routine[] routines;
@@ -28,10 +31,13 @@ public class Enemy extends DestroyableObject {
     radius = 5;
     health = 5;
     shootCooldown = 0.1;
-    disengageDelay = 3;
-    forwardVisionLength = 30;
-    proximityDetectionRadius = 20;
-    heatSenseThreshold = 10;
+    disengageDelay = 1;
+    attackVisionLength = 600;
+    attackVisionAngle = PI/6;
+    forwardVisionLength = 120;
+    proximityDetectionRadius = 60;
+    heatVisionLength = 50;
+    heatSenseThreshold = 100;
 
     // Don't change this
     state = PATROL;
@@ -50,13 +56,10 @@ public class Enemy extends DestroyableObject {
     
     switch (state) {
       case PATROL: movePatrol();
-        println("State: PATROL");
         break;
       case TRACK: trackHeat();
-        println("State: TRACK");
         break;
       case ATTACK: followPlayer();
-        println("State: ATTACK");
         break;
     }
     
@@ -92,8 +95,8 @@ public class Enemy extends DestroyableObject {
     heading = -Math.signum(heading - PI);
     
     direction.rotate(0.12 * heading);
-    x = constrain(x + direction.x * 2, radius, width - radius);
-    y = constrain(y + direction.y * 2, radius, height - radius);
+    x = constrain(x + direction.x * 5, radius, width - radius);
+    y = constrain(y + direction.y * 5, radius, height - radius);
     bounceOffWalls();
   }
   
@@ -103,8 +106,10 @@ public class Enemy extends DestroyableObject {
     heading = -Math.signum(heading - PI);
     
     direction.rotate(0.04 * heading);
-    x = constrain(x + direction.x * 5, radius, width - radius);
-    y = constrain(y + direction.y * 5, radius, height - radius);
+    if (dist(player.x, player.y, x, y) > player.radius + forwardVisionLength) {
+      x = constrain(x + direction.x * 5, radius, width - radius);
+      y = constrain(y + direction.y * 5, radius, height - radius);
+    }
     bounceOffWalls();
   }
   
@@ -119,10 +124,20 @@ public class Enemy extends DestroyableObject {
   }
   
   private void search() {
+    // Attack Vision
+    if (state == ATTACK) {
+      PVector targetDirection = new PVector(player.x - x, player.y - y);
+      float heading = modAngle(targetDirection.heading() - direction.heading());
+      float range = Math.abs(heading - PI);
+      if (range > PI - attackVisionAngle && dist(player.x, player.y, x, y) < attackVisionLength) {
+        setState(ATTACK);
+      }
+    }
+    
     // Forward Vision
     for (int i = 0; i < forwardVisionLength; i++) {
-      float detectX = direction.x * i;
-      float detectY = direction.y * i;
+      float detectX = x + direction.x * i;
+      float detectY = y + direction.y * i;
       if (dist(player.x, player.y, detectX, detectY) < player.radius) {
         setState(ATTACK);
       }
@@ -150,9 +165,21 @@ public class Enemy extends DestroyableObject {
         if (state == TRACK) {
           setState(PATROL);
         }
-      } else if (dist(targetParticle.x, targetParticle.y, x, y) < radius && targetParticle.heatLevel > heatSenseThreshold && state == TRACK) {
-        setState(TRACK);
-        targetParticle = targetParticle.next;
+      } else if (targetParticle.heatLevel > heatSenseThreshold && state == TRACK) {
+        if (dist(targetParticle.x, targetParticle.y, x, y) < radius) {
+          setState(TRACK);
+          targetParticle = targetParticle.next;
+        }
+        for (HeatTrailParticle p : heatTrail.particles) {
+          for (int i = 0; i < heatVisionLength; i++) {
+            float detectX = x + direction.x * i;
+            float detectY = y + direction.y * i;
+            if (dist(p.x, p.y, detectX, detectY) < p.radius) {
+              setState(TRACK);
+              targetParticle = p.next;
+            }
+          }
+        }
       }
     }
   }
@@ -189,14 +216,17 @@ public class Enemy extends DestroyableObject {
   }
   
   private void display() {
-    fill(0, 100, 255, 100);
-    stroke(0, 255, 0);
-    strokeWeight(1);
+    fill(255, 100, 0, 50);
+    noStroke();
+    arc(x, y, attackVisionLength, attackVisionLength, direction.heading() - attackVisionAngle, direction.heading() + attackVisionAngle, PIE);
+    fill(0, 100, 255, 50);
+    noStroke();
     ellipse(x, y, proximityDetectionRadius * 2, proximityDetectionRadius * 2);
     stroke(200, 0, 255, 200);
-    strokeWeight(2);
+    strokeWeight(3);
     line(x, y, x + direction.x * forwardVisionLength, y + direction.y * forwardVisionLength);
     fill(255, 0, 0);
+    noStroke();
     ellipse(x, y, radius * 2, radius * 2);
   }
   
