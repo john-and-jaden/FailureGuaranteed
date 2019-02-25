@@ -4,15 +4,8 @@ public class Enemy {
   private PVector direction;
   private float radius;
   private int health;
-  private float shootCooldown;
   private float disengageDelay;
-  private float attackVisionDistance;
-  private float attackVisionAngle;
-  private float forwardVisionLength;
-  private float proximityDetectionRadius;
-  private float heatVisionLength;
-  private float heatSenseThreshold;
-  
+
   State[] states;
   private int currentRoutine;
   private int currentState;
@@ -32,13 +25,6 @@ public class Enemy {
     radius = random(8, 16);
     health = (int) random(3, 6);
     disengageDelay = 1;
-    attackVisionDistance = random(200, 600);
-    attackVisionAngle = random(PI/24, PI/4);
-    forwardVisionLength = random(50, 150);
-    proximityDetectionRadius = random(20, 80);
-    heatVisionLength = random(20, 80);
-    heatSenseThreshold = random(0, 190);
-    shootCooldown = 5;
     totalNumQuotaAttributes = 17;
 
     // Don't change this
@@ -90,8 +76,8 @@ public class Enemy {
     states[0] = new State(PATROL);
     states[1] = new State(TRACK);
     states[2] = new State(ATTACK);
-    
-    
+
+
     // you can tweak those parameters
     int quota = 1000;
     int maxValue = 50;
@@ -119,18 +105,18 @@ public class Enemy {
       array[i] = array[newIndex];
       array[newIndex] = temp;
     }
-    
+
     int index = 0;
-    
+
     // attributes common to all states
     health = array[index++];
-    
+
     for (int i = 0; i < states.length; i++) {
       // attributes common to all routines
       states[i].forwardVisionLength = array[index++];
       states[i].proximityDetectionRadius = array[index++];
       states[i].heatSenseThreshold = array[index++];
-      
+
       // attributes unique within each routine
       for (int j = 0; j < states[i].routines.length; j++) {
         states[i].routines[j].forwardSpeed = random(0, maxValue);
@@ -142,6 +128,12 @@ public class Enemy {
         states[i].routines[j].shootCooldown = array[index++];
       }
     }
+  }
+
+  private void getRelativeWeight(int value) {
+    // from 0 to 10, quadratic up
+    // from 10 to 40, linear
+    // from 40 to 50, quadratic down
   }
 
   private void movePatrol() {
@@ -171,7 +163,7 @@ public class Enemy {
     heading = -Math.signum(heading - PI);
 
     direction.rotate(0.04 * heading);
-    if (dist(player.x, player.y, x, y) > player.radius + forwardVisionLength) {
+    if (dist(player.x, player.y, x, y) > player.radius + states[currentState].forwardVisionLength) {
       x = constrain(x + direction.x * 5, radius, width - radius);
       y = constrain(y + direction.y * 5, radius, height - radius);
     }
@@ -194,13 +186,14 @@ public class Enemy {
       PVector targetDirection = new PVector(player.x - x, player.y - y);
       float heading = modAngle(targetDirection.heading() - direction.heading());
       float range = Math.abs(heading - PI);
-      if (range > PI - attackVisionAngle && dist(player.x, player.y, x, y) < attackVisionDistance) {
+      if (range > PI - states[currentState].attackVisionAngle 
+        && dist(player.x, player.y, x, y) < states[currentState].attackVisionDistance) {
         setState(ATTACK);
       }
     }
-    
+
     // Forward Vision
-    for (int i = 0; i < forwardVisionLength; i++) {
+    for (int i = 0; i < states[currentState].forwardVisionLength; i++) {
       float detectX = x + direction.x * i;
       float detectY = y + direction.y * i;
       if (dist(player.x, player.y, detectX, detectY) < player.radius) {
@@ -209,7 +202,7 @@ public class Enemy {
     }
 
     // Proximity Vision
-    if (dist(player.x, player.y, x, y) < proximityDetectionRadius + player.radius) {
+    if (dist(player.x, player.y, x, y) < states[currentState].proximityDetectionRadius + player.radius) {
       setState(ATTACK);
     }
 
@@ -219,7 +212,7 @@ public class Enemy {
         if (targetParticle != null) {
           continue;
         }
-        if (dist(p.x, p.y, x, y) < radius && p.heatLevel > heatSenseThreshold) {
+        if (dist(p.x, p.y, x, y) < radius && p.heatLevel > states[currentState].heatSenseThreshold) {
           setState(TRACK);
           targetParticle = p.next;
         }
@@ -230,13 +223,13 @@ public class Enemy {
         if (currentState == TRACK) {
           setState(PATROL);
         }
-      } else if (targetParticle.heatLevel > heatSenseThreshold && currentState == TRACK) {
+      } else if (targetParticle.heatLevel > states[currentState].heatSenseThreshold && currentState == TRACK) {
         if (dist(targetParticle.x, targetParticle.y, x, y) < radius) {
           setState(TRACK);
           targetParticle = targetParticle.next;
         }
         for (HeatTrailParticle p : heatTrail.particles) {
-          for (int i = 0; i < heatVisionLength; i++) {
+          for (int i = 0; i < states[currentState].heatVisionLength; i++) {
             float detectX = x + direction.x * i;
             float detectY = y + direction.y * i;
             if (dist(p.x, p.y, detectX, detectY) < p.radius) {
@@ -263,11 +256,11 @@ public class Enemy {
       }
     }
   }
-  
+
   private void shoot() {
     shootTimer += timer.deltaTime;
 
-    if (shootTimer > shootCooldown) {
+    if (shootTimer > states[currentState].routines[currentRoutine].shootCooldown) {
       enemyBullets.add(new EnemyBullet(x, y, direction.copy(), radius));
       shootTimer = 0;
     }
@@ -279,7 +272,7 @@ public class Enemy {
       disable();
     }
   }
-  
+
   public void respawn() {
     // You can change this
     x = width - random(radius, width / 6);
@@ -288,13 +281,6 @@ public class Enemy {
     radius = random(8, 16);
     health = (int) random(3, 6);
     disengageDelay = 1;
-    attackVisionDistance = random(200, 600);
-    attackVisionAngle = random(PI/24, PI/4);
-    forwardVisionLength = random(50, 150);
-    proximityDetectionRadius = random(20, 80);
-    heatVisionLength = random(20, 80);
-    heatSenseThreshold = random(0, 190);
-    shootCooldown = 5;
 
     // Don't change this
     initStates();
@@ -317,21 +303,23 @@ public class Enemy {
     if (currentState == ATTACK) {
       fill(255, 100, 0, 50);
       noStroke();
-      arc(x, y, attackVisionDistance, attackVisionDistance, direction.heading() - attackVisionAngle, direction.heading() + attackVisionAngle, PIE);
+      arc(x, y, states[currentState].attackVisionDistance, states[currentState].attackVisionDistance, 
+        direction.heading() - states[currentState].attackVisionAngle, direction.heading() + states[currentState].attackVisionAngle, PIE);
     }
 
     fill(0, 100, 255, 25);
     noStroke();
-    ellipse(x, y, proximityDetectionRadius * 2, proximityDetectionRadius * 2);
+    ellipse(x, y, states[currentState].proximityDetectionRadius * 2, states[currentState].proximityDetectionRadius * 2);
 
     stroke(200, 0, 255);
     strokeWeight(2);
-    line(x, y, x + direction.x * forwardVisionLength, y + direction.y * forwardVisionLength);
+    line(x, y, x + direction.x * states[currentState].forwardVisionLength, y + direction.y * states[currentState].forwardVisionLength);
 
     fill(255, 0, 0);
     stroke(0);
     strokeWeight(2);
     ellipse(x, y, radius * 2, radius * 2);
+
     textSize(20);
     textAlign(CENTER, CENTER);
     fill(0);
@@ -343,48 +331,50 @@ public class Enemy {
       return a + TWO_PI;
     return a;
   }
-  
+
   private class State {
-  int typeOfState;
-  float forwardVisionLength;
-  float proximityDetectionRadius;
-  float heatSenseThreshold;
-  Routine[] routines;
+    int typeOfState;
+    float attackVisionDistance;
+    float attackVisionAngle;
+    float forwardVisionLength;
+    float proximityDetectionRadius;
+    float heatVisionLength;
+    float heatSenseThreshold;
+    Routine[] routines;
 
-  State(int typeOfState) {
-    this.typeOfState = typeOfState;
-    init();
-  }
-  
-  private void init() {
-    switch(typeOfState) {
-     case PATROL: initRoutines(3); break;
-     case TRACK: 
-     case ATTACK: initRoutines(1);
+    State(int typeOfState) {
+      this.typeOfState = typeOfState;
+      init();
+    }
+
+    private void init() {
+      switch(typeOfState) {
+      case PATROL: 
+        initRoutines(3); 
+        break;
+      case TRACK: 
+      case ATTACK: 
+        initRoutines(1);
+      }
+    }
+
+    private void initRoutines(int numRoutines) {
+      routines = new Routine[numRoutines];
+      for (int i = 0; i < numRoutines; i++) {
+        routines[i] = new Routine();
+      }
+    }
+
+    private class Routine {
+      // routine specific
+      int duration;
+
+      // movement specific
+      float forwardSpeed;
+      float rotationSpeed;
+
+      // attack specific
+      float shootCooldown;
     }
   }
-  
-  private void initRoutines(int numRoutines) {
-    routines = new Routine[numRoutines];
-    for(int i = 0; i < numRoutines; i++) {
-      routines[i] = new Routine();
-    }
-  }
-  
-private class Routine {
-  // routine specific
-  int duration;
-
-  // movement specific
-  float forwardSpeed;
-  float rotationSpeed;
-  
-  // detection & vision specifi
-  // attack specific
-  float shootCooldown;
-
-  // health
-  int health;
-}
-}
 }
