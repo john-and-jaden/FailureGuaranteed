@@ -1,4 +1,6 @@
-public class Enemy extends DestroyableObject {
+
+public class Enemy {
+  public final int PATROL = 0, TRACK = 1, ATTACK = 2;
   private float x, y;
   private PVector direction;
   private float radius;
@@ -18,9 +20,8 @@ public class Enemy extends DestroyableObject {
   private HeatTrailParticle targetParticle;
   private float shootTimer;
   private int currentHealth;
-
   int totalNumQuotaAttributes;
-
+  private boolean disabled;
   EnemyState patrolState;
   EnemyState trackingState;
   EnemyState attackingState;
@@ -49,12 +50,12 @@ public class Enemy extends DestroyableObject {
     state = 0;
     initStates();
     currentHealth = health;
+    disabled = false;
   }
 
   public void update() {
-    if (isFlagged())
+    if (disabled)
       return;
-
     updateCurrentRoutineAndTimer();
     disengage();
     search();
@@ -143,7 +144,7 @@ public class Enemy extends DestroyableObject {
     trackingState.routines[0].proximityDetectionRadius = array[9];
     trackingState.routines[0].heatSenseThreshold = array[10];
     trackingState.routines[0].shootCooldown = array[11];
-    
+
     attackingState.routines[0].rotationSpeed = array[12];
     attackingState.routines[0].forwardVisionLength = array[13];
     attackingState.routines[0].proximityDetectionRadius = array[14];
@@ -214,9 +215,13 @@ public class Enemy extends DestroyableObject {
         setState(ATTACK);
       }
     }
+    <<<<<<< HEAD
 
-    // Forward Vision
-    for (int i = 0; i < forwardVisionLength; i++) {
+      =======
+
+      >>>>>>> 6249917da5de6cbb988a2939204d6f157a523406
+      // Forward Vision
+      for (int i = 0; i < forwardVisionLength; i++) {
       float detectX = x + direction.x * i;
       float detectY = y + direction.y * i;
       if (dist(player.x, player.y, detectX, detectY) < player.radius) {
@@ -291,19 +296,57 @@ public class Enemy extends DestroyableObject {
 
   public void takeDamage(int damage) {
     currentHealth -= damage;
-    if (currentHealth <= 0 && !isFlagged()) {
-      flag();
+    if (currentHealth <= 0 && !disabled) {
+      disable();
     }
   }
+  <<<<<<< HEAD
 
-  private void display() {
+    =======
+
+    public void respawn() {
+    // You can change this
+    x = width - random(radius, width / 6);
+    y = height / 2 + random(-height / 3, height / 3); 
+    direction = new PVector(-1, 0);
+    radius = random(8, 16);
+    health = (int) random(3, 6);
+    disengageDelay = 1;
+    attackVisionDistance = random(200, 600);
+    attackVisionAngle = random(PI/24, PI/4);
+    forwardVisionLength = random(50, 150);
+    proximityDetectionRadius = random(20, 80);
+    heatVisionLength = random(20, 80);
+    heatSenseThreshold = random(0, 190);
+    shootCooldown = 5;
+
+    // Don't change this
+    state = PATROL;
+    currentRoutine = 0;
+    disengageTimer = 0;
+    state = 0;
+    initRoutines();
+    currentHealth = health;
+    disabled = false;
+  }
+
+  private void disable() {
+    disabled = true;
+    currentHealth = 0;
+    x = -radius*2;
+    y = -radius*2;
+  }
+
+  >>>>>>> 6249917da5de6cbb988a2939204d6f157a523406
+    private void display() {
     if (state == ATTACK) {
       fill(255, 100, 0, 50);
       noStroke();
       arc(x, y, attackVisionDistance, attackVisionDistance, direction.heading() - attackVisionAngle, direction.heading() + attackVisionAngle, PIE);
     }
+    <<<<<<< HEAD
 
-    fill(0, 100, 255, 25);
+      fill(0, 100, 255, 25);
     noStroke();
     ellipse(x, y, proximityDetectionRadius * 2, proximityDetectionRadius * 2);
 
@@ -311,64 +354,113 @@ public class Enemy extends DestroyableObject {
     strokeWeight(2);
     line(x, y, x + direction.x * forwardVisionLength, y + direction.y * forwardVisionLength);
 
-    fill(255, 0, 0);
+    =======
+
+      fill(0, 100, 255, 25);
+    noStroke();
+    ellipse(x, y, proximityDetectionRadius * 2, proximityDetectionRadius * 2);
+
+    stroke(200, 0, 255);
+    strokeWeight(2);
+    line(x, y, x + direction.x * forwardVisionLength, y + direction.y * forwardVisionLength);
+
+    >>>>>>> 6249917da5de6cbb988a2939204d6f157a523406
+      fill(255, 0, 0);
     stroke(0);
     strokeWeight(2);
     ellipse(x, y, radius * 2, radius * 2);
+    <<<<<<< HEAD
 
-    textSize(20);
+      =======
+
+      >>>>>>> 6249917da5de6cbb988a2939204d6f157a523406
+      textSize(20);
     textAlign(CENTER, CENTER);
     fill(0);
     text(currentHealth, x, y + radius*2);
   }
-/*
+  /*
   private void initRoutines() {
-    routines = new Routine[3];
-    for (int i = 0; i < routines.length; i++) {
-      // routine specific
-      routines[i] = new Routine();
-      initRoutine(routines[i]);
-    }
-  }
-  */
-/*
+   routines = new Routine[3];
+   for (int i = 0; i < routines.length; i++) {
+   // routine specific
+   routines[i] = new Routine();
+   initRoutine(routines[i]);
+   }
+   }
+   */
+  /*
   private void initRoutine(Routine routine) {
-    // you can change tweak those parameters
-    int quota = 100;
-    int maxValue = 50;
-    int remainder = quota;
-    int unassigned = 3;
-
-    // generate array of numbers
-    int[] array = new int[5];
-    int currentIndex = 0;
-    while (remainder > 0) {
-      float assigningValue = (int) random(1, constrain(remainder - unassigned, 1, maxValue - array[currentIndex]) + 1);
-      array[currentIndex] += assigningValue;
-      unassigned--;
-      remainder -= assigningValue;
-      currentIndex++;
-      if (currentIndex > 4) {
-        currentIndex = 0;
-      }
-    }
-
-    // randomize array order
-    for (int i = 0; i < array.length; i++) {
-      int newIndex = (int)random(0, array.length);
-      int temp = array[i];
-      array[i] = array[newIndex];
-      array[newIndex] = temp;
-    }
-
-    routine.shootCooldown = random(0.1, 2);
-
-    // assign the non-quota values
-    routine.duration = (int)random(1, 4);
-    routine.forwardSpeed = random(0, 6);
-    routine.rotationSpeed = random(0, 0.1);
-  }
-*/
+   // you can change tweak those parameters
+   int quota = 100;
+   int maxValue = 50;
+   int remainder = quota;
+   int unassigned = 3;
+   
+   // generate array of numbers
+   int[] array = new int[5];
+   int currentIndex = 0;
+   while (remainder > 0) {
+   float assigningValue = (int) random(1, constrain(remainder - unassigned, 1, maxValue - array[currentIndex]) + 1);
+   array[currentIndex] += assigningValue;
+   unassigned--;
+   remainder -= assigningValue;
+   currentIndex++;
+   if (currentIndex > 4) {
+   currentIndex = 0;
+   }
+   }
+   
+   // randomize array order
+   for (int i = 0; i < array.length; i++) {
+   int newIndex = (int)random(0, array.length);
+   int temp = array[i];
+   array[i] = array[newIndex];
+   array[newIndex] = temp;
+   }
+   
+   <<<<<<< HEAD
+   routine.shootCooldown = random(0.1, 2);
+   
+   =======
+   // assign each value from the array to one of the quota values in the routine
+   //routine.forwardVisionLength = array[0];
+   //routine.proximityDetectionRadius = array[1];
+   //routine.heatSenseThreshold = array[2];
+   //routine.shootCooldown = 25 / array[3];
+   //routine.health = array[4];
+   routine.shootCooldown = random(0.1, 2);
+   
+   >>>>>>> 6249917da5de6cbb988a2939204d6f157a523406
+   // assign the non-quota values
+   routine.duration = (int)random(1, 4);
+   routine.forwardSpeed = random(0, 6);
+   routine.rotationSpeed = random(0, 0.1);
+   <<<<<<< HEAD
+   =======
+   }
+   
+   private class Routine {
+   // routine specific
+   int duration;
+   
+   // movement specific
+   float forwardSpeed;
+   float rotationSpeed;
+   
+   // detection & vision specific
+   float forwardVisionLength;
+   float proximityDetectionRadius;
+   float heatSenseThreshold;
+   
+   // attack specific
+   float shootCooldown;
+   
+   // health
+   int health;
+   >>>>>>> 6249917da5de6cbb988a2939204d6f157a523406
+   }
+   */
   private float modAngle(float a) {
     if (a < 0)
       return a + TWO_PI;
