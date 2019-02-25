@@ -7,7 +7,7 @@ public class Enemy extends DestroyableObject {
   private int health;
   private float shootCooldown;
   private float disengageDelay;
-  private float attackVisionLength;
+  private float attackVisionDistance;
   private float attackVisionAngle;
   private float forwardVisionLength;
   private float proximityDetectionRadius;
@@ -29,19 +29,19 @@ public class Enemy extends DestroyableObject {
   
   public Enemy() {
     // You can change this
-    x = width - random(0, 50);
-    y = height / 2 + random(-50, 50); 
+    x = width - random(radius, width / 6);
+    y = height / 2 + random(-height / 3, height / 3); 
     direction = new PVector(-1, 0);
-    radius = 5;
-    health = 5;
-    shootCooldown = 0.1;
+    radius = random(8, 16);
+    health = (int) random(3, 6);
     disengageDelay = 1;
-    attackVisionLength = 600;
-    attackVisionAngle = PI/6;
-    forwardVisionLength = 120;
-    proximityDetectionRadius = 60;
-    heatVisionLength = 50;
-    heatSenseThreshold = 100;
+    attackVisionDistance = random(200, 600);
+    attackVisionAngle = random(PI/24, PI/4);
+    forwardVisionLength = random(50, 150);
+    proximityDetectionRadius = random(20, 80);
+    heatVisionLength = random(20, 80);
+    heatSenseThreshold = random(0, 190);
+    shootCooldown = 5;
     
     // Don't change this
     state = PATROL;
@@ -53,6 +53,9 @@ public class Enemy extends DestroyableObject {
   }
 
   public void update() {
+    if (isFlagged())
+      return;
+      
     updateCurrentRoutineAndTimer();
     disengage();
     search();
@@ -133,7 +136,7 @@ public class Enemy extends DestroyableObject {
       PVector targetDirection = new PVector(player.x - x, player.y - y);
       float heading = modAngle(targetDirection.heading() - direction.heading());
       float range = Math.abs(heading - PI);
-      if (range > PI - attackVisionAngle && dist(player.x, player.y, x, y) < attackVisionLength) {
+      if (range > PI - attackVisionAngle && dist(player.x, player.y, x, y) < attackVisionDistance) {
         setState(ATTACK);
       }
     }
@@ -220,18 +223,29 @@ public class Enemy extends DestroyableObject {
   }
   
   private void display() {
-    fill(255, 100, 0, 50);
-    noStroke();
-    arc(x, y, attackVisionLength, attackVisionLength, direction.heading() - attackVisionAngle, direction.heading() + attackVisionAngle, PIE);
-    fill(0, 100, 255, 50);
+    if (state == ATTACK) {
+      fill(255, 100, 0, 50);
+      noStroke();
+      arc(x, y, attackVisionDistance, attackVisionDistance, direction.heading() - attackVisionAngle, direction.heading() + attackVisionAngle, PIE);
+    }
+    
+    fill(0, 100, 255, 25);
     noStroke();
     ellipse(x, y, proximityDetectionRadius * 2, proximityDetectionRadius * 2);
-    stroke(200, 0, 255, 200);
-    strokeWeight(3);
+    
+    stroke(200, 0, 255);
+    strokeWeight(2);
     line(x, y, x + direction.x * forwardVisionLength, y + direction.y * forwardVisionLength);
+    
     fill(255, 0, 0);
-    noStroke();
+    stroke(0);
+    strokeWeight(2);
     ellipse(x, y, radius * 2, radius * 2);
+    
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    fill(0);
+    text(currentHealth, x, y + radius*2);
   }
   
   private void initRoutines() {
@@ -273,16 +287,17 @@ public class Enemy extends DestroyableObject {
     }
 
     // assign each value from the array to one of the quota values in the routine
-    routine.forwardVisionLength = array[0];
-    routine.proximityDetectionRadius = array[1];
-    routine.heatSenseThreshold = array[2];
-    routine.shootCooldown = 25 / array[3];
-    routine.health = array[4];
+    //routine.forwardVisionLength = array[0];
+    //routine.proximityDetectionRadius = array[1];
+    //routine.heatSenseThreshold = array[2];
+    //routine.shootCooldown = 25 / array[3];
+    //routine.health = array[4];
+    routine.shootCooldown = random(0.1, 2);
     
     // assign the non-quota values
-    routine.duration = (int)random(1, 5);
-    routine.forwardSpeed = random(0, 10);
-    routine.rotationSpeed = random(0, 5);
+    routine.duration = (int)random(1, 4);
+    routine.forwardSpeed = random(0, 6);
+    routine.rotationSpeed = random(0, 0.1);
   }
   
   private class Routine {

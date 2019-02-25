@@ -89,7 +89,7 @@ public class Player {
     textSize(20);
     textAlign(CENTER, CENTER);
     fill(0);
-    text(currentHealth, x, y);
+    text(currentHealth, x, y + radius*2);
   }
   
   private PVector getMouseDirection() {

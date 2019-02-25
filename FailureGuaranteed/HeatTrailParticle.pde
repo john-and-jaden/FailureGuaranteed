@@ -22,6 +22,9 @@ public class HeatTrailParticle extends DestroyableObject {
   }
   
   public void update() {
+    if (isFlagged())
+      return;
+      
     heatLevel -= heatDecay;
     
     if (heatLevel <= 0)

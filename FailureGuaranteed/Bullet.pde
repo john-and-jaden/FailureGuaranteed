@@ -12,6 +12,9 @@ public abstract class Bullet extends DestroyableObject {
   }
 
   protected void update() {
+    if (isFlagged())
+      return;
+    
     x += direction.x * speed;
     y += direction.y * speed;
 
