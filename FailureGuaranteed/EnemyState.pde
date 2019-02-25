@@ -1,12 +1,14 @@
 public class EnemyState {
   int typeOfState;
 
+/*
   float forwardSpeed;
   float rotationSpeed;
   float forwardVisionLength;
   float proximityDetectionRadius;
   float heatSenseThreshold;
   float shootCooldown;
+  */
   Routine[] routines;
   
   int totalNumberAttributes = 18;
@@ -30,18 +32,6 @@ public class EnemyState {
       routines[i] = new Routine();
     }
   }
-
-
-
-
-
-
-  // assign the non-quota values
-  /*
-  routine.duration = (int)random(1, 5);
-  routine.forwardSpeed = random(0, 10);
-  routine.rotationSpeed = random(0, 5);
-  */
 
 private class Routine {
   // routine specific

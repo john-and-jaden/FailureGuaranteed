@@ -8,6 +8,9 @@ public class PlayerBullet extends Bullet {
   }
 
   public void update() {
+    if (isFlagged())
+      return;
+    
     super.update();
     
     for (Enemy e : enemyController.enemies) {

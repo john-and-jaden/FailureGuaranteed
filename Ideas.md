@@ -30,19 +30,22 @@
 
 ### Attributes to Randomize
 #### Movement
-- Forward Speed (+/- is direction, -max to +max, distance/second)
-- Rotation Speed (+/- is direction, -max to +max, angle/second)
+- Forward Speed
+- Rotation Speed
 #### Vision
-- Forward Vision Length (0 to max, distance)
-- Proximity Detection Radius (0 to max, distance)
-- Heat Sense Threshold (0 to max, heat level)
+- Attack Vision Distance
+- Attack Vision Angle
+- Patrol Vision Length
+- Proximity Detection Radius
+- Heat Vision Length
+- Heat Sense Threshold
 #### Offense (DIFFERENT FOR ATTACK/TRACK/PATROL)
 - Bullet damage
 - Bullet speed
 - Shoot coolDown
 #### Defense
 - Health
-
+- Size
 
 ## quota-ness of different attributes
 
