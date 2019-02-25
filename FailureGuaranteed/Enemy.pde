@@ -1,4 +1,3 @@
-
 public class Enemy {
   public final int PATROL = 0, TRACK = 1, ATTACK = 2;
   private float x, y;
@@ -13,16 +12,17 @@ public class Enemy {
   private float proximityDetectionRadius;
   private float heatVisionLength;
   private float heatSenseThreshold;
+  
+  EnemyState[] states;
   private int currentRoutine;
-  private float routineTimer;
-  private int state;
+  private int currentState;
   private float disengageTimer;
-  private HeatTrailParticle targetParticle;
+  private float routineTimer;
   private float shootTimer;
   private int currentHealth;
+  private HeatTrailParticle targetParticle;
   int totalNumQuotaAttributes;
   private boolean disabled;
-  EnemyState[] states;
 
   public Enemy() {
     // You can change this
@@ -42,10 +42,10 @@ public class Enemy {
     totalNumQuotaAttributes = 17;
 
     // Don't change this
-    state = PATROL;
+    currentState = PATROL;
     currentRoutine = 0;
     disengageTimer = 0;
-    state = 0;
+    currentState = 0;
     initStates();
     currentHealth = health;
     disabled = false;
@@ -54,12 +54,12 @@ public class Enemy {
   public void update() {
     if (disabled)
       return;
-    updateCurrentRoutineAndTimer();
+    updateRoutines();
     disengage();
     search();
     shoot();
 
-    switch (state) {
+    switch (currentState) {
     case PATROL: 
       movePatrol();
       break;
@@ -73,26 +73,24 @@ public class Enemy {
     display();
   }
 
-  public void updateCurrentRoutineAndTimer() {
+  public void updateRoutines() {
     routineTimer += timer.deltaTime;
-    if (state == PATROL) {
-      if (routineTimer > patrolState.routines[currentRoutine].duration) {
-        routineTimer = 0;
-        if (currentRoutine == patrolState.routines.length - 1) {
-          currentRoutine = 0;
-        } else {
-          currentRoutine++;
-          shootCooldown = patrolState.routines[currentRoutine].shootCooldown;
-        }
+    if (routineTimer > states[currentState].routines[currentRoutine].duration) {
+      routineTimer = 0;
+      if (currentRoutine == states[currentState].routines.length - 1) {
+        currentRoutine = 0;
+      } else {
+        currentRoutine++;
       }
     }
   }
 
   private void initStates() {
     states = new EnemyState[3];
-    for(int i = 0; i < 3; i++) {
-      states[i] = new EnemyState(i);
-    }
+    states[0] = new EnemyState(PATROL);
+    states[1] = new EnemyState(TRACK);
+    states[2] = new EnemyState(ATTACK);
+    
     
     // you can tweak those parameters
     int quota = 1000;
@@ -147,10 +145,9 @@ public class Enemy {
   }
 
   private void movePatrol() {
-    println(currentRoutine);
-    direction.rotate(patrolState.routines[currentRoutine].rotationSpeed);
-    x = constrain(x + direction.x * patrolState.routines[currentRoutine].forwardSpeed, radius, width - radius);
-    y = constrain(y + direction.y * patrolState.routines[currentRoutine].forwardSpeed, radius, height - radius);
+    direction.rotate(states[currentState].routines[currentRoutine].rotationSpeed);
+    x = constrain(x + direction.x * states[currentState].routines[currentRoutine].forwardSpeed, radius, width - radius);
+    y = constrain(y + direction.y * states[currentState].routines[currentRoutine].forwardSpeed, radius, height - radius);
     bounceOffWalls();
   }
 
@@ -193,7 +190,7 @@ public class Enemy {
 
   private void search() {
     // Attack Vision
-    if (state == ATTACK) {
+    if (currentState == ATTACK) {
       PVector targetDirection = new PVector(player.x - x, player.y - y);
       float heading = modAngle(targetDirection.heading() - direction.heading());
       float range = Math.abs(heading - PI);
@@ -217,7 +214,7 @@ public class Enemy {
     }
 
     // Heat Vision
-    if (targetParticle == null && state == PATROL) {
+    if (targetParticle == null && currentState == PATROL) {
       for (HeatTrailParticle p : heatTrail.particles) {
         if (targetParticle != null) {
           continue;
@@ -230,10 +227,10 @@ public class Enemy {
     } else if (targetParticle != null) {
       if (targetParticle.heatLevel <= 0) {
         targetParticle = null;
-        if (state == TRACK) {
+        if (currentState == TRACK) {
           setState(PATROL);
         }
-      } else if (targetParticle.heatLevel > heatSenseThreshold && state == TRACK) {
+      } else if (targetParticle.heatLevel > heatSenseThreshold && currentState == TRACK) {
         if (dist(targetParticle.x, targetParticle.y, x, y) < radius) {
           setState(TRACK);
           targetParticle = targetParticle.next;
@@ -253,15 +250,15 @@ public class Enemy {
   }
 
   private void setState(int state) {
-    this.state = state;
+    this.currentState = state;
     disengageTimer = 0;
   }
 
   private void disengage() {
-    if (state != PATROL) {
+    if (currentState != PATROL) {
       disengageTimer += timer.deltaTime;
       if (disengageTimer > disengageDelay) {
-        state = PATROL;
+        currentState = PATROL;
         disengageTimer = 0;
       }
     }
@@ -301,10 +298,10 @@ public class Enemy {
 
     // Don't change this
     initStates();
-    state = PATROL;
+    currentState = PATROL;
     currentRoutine = 0;
     disengageTimer = 0;
-    state = 0;
+    currentState = 0;
     currentHealth = health;
     disabled = false;
   }
@@ -317,7 +314,7 @@ public class Enemy {
   }
 
   private void display() {
-    if (state == ATTACK) {
+    if (currentState == ATTACK) {
       fill(255, 100, 0, 50);
       noStroke();
       arc(x, y, attackVisionDistance, attackVisionDistance, direction.heading() - attackVisionAngle, direction.heading() + attackVisionAngle, PIE);
