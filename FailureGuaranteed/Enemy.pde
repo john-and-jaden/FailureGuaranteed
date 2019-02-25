@@ -13,7 +13,7 @@ public class Enemy {
   private float heatVisionLength;
   private float heatSenseThreshold;
   
-  EnemyState[] states;
+  State[] states;
   private int currentRoutine;
   private int currentState;
   private float disengageTimer;
@@ -86,10 +86,10 @@ public class Enemy {
   }
 
   private void initStates() {
-    states = new EnemyState[3];
-    states[0] = new EnemyState(PATROL);
-    states[1] = new EnemyState(TRACK);
-    states[2] = new EnemyState(ATTACK);
+    states = new State[3];
+    states[0] = new State(PATROL);
+    states[1] = new State(TRACK);
+    states[2] = new State(ATTACK);
     
     
     // you can tweak those parameters
@@ -198,7 +198,7 @@ public class Enemy {
         setState(ATTACK);
       }
     }
-
+    
     // Forward Vision
     for (int i = 0; i < forwardVisionLength; i++) {
       float detectX = x + direction.x * i;
@@ -263,7 +263,7 @@ public class Enemy {
       }
     }
   }
-
+  
   private void shoot() {
     shootTimer += timer.deltaTime;
 
@@ -279,7 +279,7 @@ public class Enemy {
       disable();
     }
   }
-
+  
   public void respawn() {
     // You can change this
     x = width - random(radius, width / 6);
@@ -343,4 +343,48 @@ public class Enemy {
       return a + TWO_PI;
     return a;
   }
+  
+  private class State {
+  int typeOfState;
+  float forwardVisionLength;
+  float proximityDetectionRadius;
+  float heatSenseThreshold;
+  Routine[] routines;
+
+  State(int typeOfState) {
+    this.typeOfState = typeOfState;
+    init();
+  }
+  
+  private void init() {
+    switch(typeOfState) {
+     case PATROL: initRoutines(3); break;
+     case TRACK: 
+     case ATTACK: initRoutines(1);
+    }
+  }
+  
+  private void initRoutines(int numRoutines) {
+    routines = new Routine[numRoutines];
+    for(int i = 0; i < numRoutines; i++) {
+      routines[i] = new Routine();
+    }
+  }
+  
+private class Routine {
+  // routine specific
+  int duration;
+
+  // movement specific
+  float forwardSpeed;
+  float rotationSpeed;
+  
+  // detection & vision specifi
+  // attack specific
+  float shootCooldown;
+
+  // health
+  int health;
+}
+}
 }
