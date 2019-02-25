@@ -121,46 +121,29 @@ public class Enemy {
       array[i] = array[newIndex];
       array[newIndex] = temp;
     }
-
-    // attributes common to all routines of patrol state
-    patrolState.forwardVisionLength = array[0];
-    patrolState.proximityDetectionRadius = array[1];
-    patrolState.heatSenseThreshold = array[2];
-    health = array[3];
-
-    // health is an attribute common to all states
-    trackingState.routines[0].health = array[3];
-    attackingState.routines[0].health = array[3];
-
-    // assign each value from the array to one of the quota values in the routine
-    for (int i = 0; i < 3; i++) {
-      patrolState.routines[i].shootCooldown = array[4 + i] / 20; //!!!!!!!!
+    
+    int index = 0;
+    
+    // attributes common to all states
+    health = array[index++];
+    
+    for (int i = 0; i < states.length; i++) {
+      // attributes common to all routines
+      states[i].forwardVisionLength = array[index++];
+      states[i].proximityDetectionRadius = array[index++];
+      states[i].heatSenseThreshold = array[index++];
+      
+      // attributes unique within each routine
+      for (int j = 0; j < states[i].routines.length; j++) {
+        states[i].routines[j].forwardSpeed = random(0, maxValue);
+        if (i == PATROL) {
+          states[i].routines[j].rotationSpeed = random(0, maxValue);
+        } else {
+          states[i].routines[j].rotationSpeed = array[index++];
+        }
+        states[i].routines[j].shootCooldown = array[index++];
+      }
     }
-
-    trackingState.routines[0].rotationSpeed = array[7];
-    trackingState.forwardVisionLength = array[8];
-    trackingState.proximityDetectionRadius = array[9];
-    trackingState.heatSenseThreshold = array[10];
-    trackingState.routines[0].shootCooldown = array[11];
-
-    attackingState.routines[0].rotationSpeed = array[12];
-    attackingState.routines[0].forwardVisionLength = array[13];
-    attackingState.routines[0].proximityDetectionRadius = array[14];
-    attackingState.routines[0].heatSenseThreshold = array[15];
-    attackingState.routines[0].shootCooldown = array[16];    
-
-    // assign non quota values
-    for (int i =0; i < 3; i++) {
-      //  patrolState.routines[i].forwardSpeed = random(0, 10);
-      //  patrolState.routines[i].rotationSpeed = random(0, 0.1);
-    }
-
-    patrolState.routines[0].rotationSpeed = 10;
-    patrolState.routines[1].rotationSpeed = 1;
-    patrolState.routines[2].rotationSpeed = 0.5;
-
-    trackingState.routines[0].forwardSpeed = random(0, 10);
-    attackingState.routines[0].forwardSpeed = random(0, 10);
   }
 
   private void movePatrol() {
