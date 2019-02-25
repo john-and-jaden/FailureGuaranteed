@@ -1,6 +1,9 @@
 public class EnemyState {
   int typeOfState;
-
+  float forwardVisionLength;
+  float proximityDetectionRadius;
+  float heatSenseThreshold;
+  
 /*
   float forwardSpeed;
   float rotationSpeed;
@@ -40,12 +43,8 @@ private class Routine {
   // movement specific
   float forwardSpeed;
   float rotationSpeed;
-
-  // detection & vision specific
-  float forwardVisionLength;
-  float proximityDetectionRadius;
-  float heatSenseThreshold;
-
+  
+  // detection & vision specifi
   // attack specific
   float shootCooldown;
 

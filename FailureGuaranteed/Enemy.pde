@@ -22,9 +22,7 @@ public class Enemy {
   private int currentHealth;
   int totalNumQuotaAttributes;
   private boolean disabled;
-  EnemyState patrolState;
-  EnemyState trackingState;
-  EnemyState attackingState;
+  EnemyState[] states;
 
   public Enemy() {
     // You can change this
@@ -91,9 +89,11 @@ public class Enemy {
   }
 
   private void initStates() {
-    patrolState = new EnemyState(PATROL);
-    trackingState = new EnemyState(TRACK);
-    attackingState = new EnemyState(ATTACK);
+    states = new EnemyState[3];
+    for(int i = 0; i < 3; i++) {
+      states[i] = new EnemyState(i);
+    }
+    
     // you can tweak those parameters
     int quota = 1000;
     int maxValue = 50;
@@ -123,12 +123,10 @@ public class Enemy {
     }
 
     // attributes common to all routines of patrol state
-    for (int i = 0; i < 3; i++) {
-      patrolState.routines[i].forwardVisionLength = array[0];
-      patrolState.routines[i].proximityDetectionRadius = array[1];
-      patrolState.routines[i].heatSenseThreshold = array[2];
-      patrolState.routines[i].health = array[3];
-    }
+    patrolState.forwardVisionLength = array[0];
+    patrolState.proximityDetectionRadius = array[1];
+    patrolState.heatSenseThreshold = array[2];
+    health = array[3];
 
     // health is an attribute common to all states
     trackingState.routines[0].health = array[3];
@@ -136,13 +134,13 @@ public class Enemy {
 
     // assign each value from the array to one of the quota values in the routine
     for (int i = 0; i < 3; i++) {
-      patrolState.routines[i].shootCooldown = array[4 + i];
+      patrolState.routines[i].shootCooldown = array[4 + i] / 20; //!!!!!!!!
     }
 
     trackingState.routines[0].rotationSpeed = array[7];
-    trackingState.routines[0].forwardVisionLength = array[8];
-    trackingState.routines[0].proximityDetectionRadius = array[9];
-    trackingState.routines[0].heatSenseThreshold = array[10];
+    trackingState.forwardVisionLength = array[8];
+    trackingState.proximityDetectionRadius = array[9];
+    trackingState.heatSenseThreshold = array[10];
     trackingState.routines[0].shootCooldown = array[11];
 
     attackingState.routines[0].rotationSpeed = array[12];
@@ -153,15 +151,20 @@ public class Enemy {
 
     // assign non quota values
     for (int i =0; i < 3; i++) {
-      patrolState.routines[i].forwardSpeed = random(0, 10);
-      patrolState.routines[i].rotationSpeed = random(0, 0.1);
+      //  patrolState.routines[i].forwardSpeed = random(0, 10);
+      //  patrolState.routines[i].rotationSpeed = random(0, 0.1);
     }
+
+    patrolState.routines[0].rotationSpeed = 10;
+    patrolState.routines[1].rotationSpeed = 1;
+    patrolState.routines[2].rotationSpeed = 0.5;
 
     trackingState.routines[0].forwardSpeed = random(0, 10);
     attackingState.routines[0].forwardSpeed = random(0, 10);
   }
 
   private void movePatrol() {
+    println(currentRoutine);
     direction.rotate(patrolState.routines[currentRoutine].rotationSpeed);
     x = constrain(x + direction.x * patrolState.routines[currentRoutine].forwardSpeed, radius, width - radius);
     y = constrain(y + direction.y * patrolState.routines[currentRoutine].forwardSpeed, radius, height - radius);
@@ -344,7 +347,7 @@ public class Enemy {
     stroke(200, 0, 255);
     strokeWeight(2);
     line(x, y, x + direction.x * forwardVisionLength, y + direction.y * forwardVisionLength);
-    
+
     fill(255, 0, 0);
     stroke(0);
     strokeWeight(2);
@@ -354,7 +357,7 @@ public class Enemy {
     fill(0);
     text(currentHealth, x, y + radius*2);
   }
-  
+
   private float modAngle(float a) {
     if (a < 0)
       return a + TWO_PI;
