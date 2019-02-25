@@ -14,12 +14,22 @@ public class EnemyController {
   }
   
   void update() {
-    ArrayList<Enemy> flaggedEnemies = new ArrayList<Enemy>();  
+    boolean allDisabled = true;
+    
     for (Enemy e : enemies) {
-      e.update(); 
-      if (e.isFlagged())
-        flaggedEnemies.add(e);
+      e.update();
+      if (!allDisabled) {
+        continue;
+      }
+      if (!e.disabled) {
+        allDisabled = false;
+      }
     }
-    enemies.removeAll(flaggedEnemies);
+    
+    if (allDisabled) {
+      for (Enemy e : enemies) {
+        e.respawn();
+      }
+    }
   }
 }

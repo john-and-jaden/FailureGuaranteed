@@ -1,4 +1,4 @@
-public class Enemy extends DestroyableObject {
+public class Enemy {
   public final int PATROL = 0, TRACK = 1, ATTACK = 2;
   
   private float x, y;
@@ -22,6 +22,7 @@ public class Enemy extends DestroyableObject {
   private HeatTrailParticle targetParticle;
   private float shootTimer;
   private int currentHealth;
+  private boolean disabled;
   
   EnemyState patrolState;
   EnemyState trackingState;
@@ -50,10 +51,11 @@ public class Enemy extends DestroyableObject {
     state = 0;
     initRoutines();
     currentHealth = health;
+    disabled = false;
   }
 
   public void update() {
-    if (isFlagged())
+    if (disabled)
       return;
       
     updateCurrentRoutineAndTimer();
@@ -217,9 +219,42 @@ public class Enemy extends DestroyableObject {
 
   public void takeDamage(int damage) {
     currentHealth -= damage;
-    if (currentHealth <= 0 && !isFlagged()) {
-      flag();
+    if (currentHealth <= 0 && !disabled) {
+      disable();
     }
+  }
+  
+  public void respawn() {
+    // You can change this
+    x = width - random(radius, width / 6);
+    y = height / 2 + random(-height / 3, height / 3); 
+    direction = new PVector(-1, 0);
+    radius = random(8, 16);
+    health = (int) random(3, 6);
+    disengageDelay = 1;
+    attackVisionDistance = random(200, 600);
+    attackVisionAngle = random(PI/24, PI/4);
+    forwardVisionLength = random(50, 150);
+    proximityDetectionRadius = random(20, 80);
+    heatVisionLength = random(20, 80);
+    heatSenseThreshold = random(0, 190);
+    shootCooldown = 5;
+    
+    // Don't change this
+    state = PATROL;
+    currentRoutine = 0;
+    disengageTimer = 0;
+    state = 0;
+    initRoutines();
+    currentHealth = health;
+    disabled = false;
+  }
+  
+  private void disable() {
+     disabled = true;
+     currentHealth = 0;
+     x = -radius*2;
+     y = -radius*2;
   }
   
   private void display() {
