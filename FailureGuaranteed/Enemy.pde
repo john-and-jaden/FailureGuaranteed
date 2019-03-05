@@ -130,7 +130,15 @@ public class Enemy {
     }
   }
 
-  private void getRelativeWeight(int value) {
+  private float scaleForwardSpeed(int value) {
+    if (value < 10) {
+      return 0;
+    } else {
+      return value/4;
+    }
+  }
+  
+  private void getStandardCurve(int value) {
     // from 0 to 10, quadratic up
     // from 10 to 40, linear
     // from 40 to 50, quadratic down
