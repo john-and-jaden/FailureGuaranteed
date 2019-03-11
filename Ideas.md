@@ -30,12 +30,9 @@
 
 ### Attributes to Randomize
 
-Each attribute will have a standard value that will be scaled based on some curve.
-- Standard Curve (Min 1/10; Mid 1; Max 4)
-- Reverse Curve (Min 4; Mid 1; Max 1/10)
 #### Movement
-- Forward Speed (Min 0; Mid 6; Max 15)
-- Rotation Speed
+- Forward Speed
+- Rotation Speed 
 #### Vision
 - Attack Vision Distance
 - Attack Vision Angle
