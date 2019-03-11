@@ -5,6 +5,14 @@ public abstract class Bullet extends DestroyableObject {
   protected int damage;
   protected PVector direction;
 
+  public Bullet(float x, float y, PVector direction, float spawnDistance, float speed, int damage) {
+    this.x = x + (direction.x * (radius + spawnDistance));
+    this.y = y + (direction.y * (radius + spawnDistance));
+    this.direction = direction;
+    this.speed = speed;
+    this.damage = damage;
+  }
+
   public Bullet(float x, float y, PVector direction, float spawnDistance) {
     this.x = x + (direction.x * (radius + spawnDistance));
     this.y = y + (direction.y * (radius + spawnDistance));

@@ -17,7 +17,7 @@ public class Player {
     y = height/2;
     radius = 20;
     speed = 5;
-    health = 25;
+    health = 30;
     shootCooldown = 0.2;
     trailSpawnCooldown = 0;
     

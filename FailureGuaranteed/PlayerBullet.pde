@@ -3,8 +3,8 @@ public class PlayerBullet extends Bullet {
     super(x, y, direction, spawnDistance);
     // You can modify this
     radius = 5;
-    speed = 5;
-    damage = 1;
+    speed = 10;
+    damage = 3;
   }
 
   public void update() {

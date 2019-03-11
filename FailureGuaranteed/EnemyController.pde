@@ -4,7 +4,7 @@ public class EnemyController {
 
   EnemyController() {
     // You can modify this
-    numberEnemies = 3;
+    numberEnemies = 1;
     
     // Don't modify this
     enemies = new ArrayList<Enemy>(numberEnemies);

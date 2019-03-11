@@ -23,9 +23,8 @@ public class Enemy {
     y = height / 2 + random(-height / 3, height / 3); 
     direction = new PVector(-1, 0);
     radius = random(8, 16);
-    health = (int) random(3, 6);
     disengageDelay = 1;
-    totalNumQuotaAttributes = 17;
+    totalNumQuotaAttributes = 22;
 
     // Don't change this
     currentState = PATROL;
@@ -33,7 +32,6 @@ public class Enemy {
     disengageTimer = 0;
     currentState = 0;
     initStates();
-    currentHealth = health;
     disabled = false;
   }
 
@@ -77,21 +75,18 @@ public class Enemy {
     states[1] = new State(TRACK);
     states[2] = new State(ATTACK);
 
-
-    // you can tweak those parameters
-    int quota = 1000;
-    int maxValue = 50;
-    int remainder = quota;
-    int unassigned = totalNumQuotaAttributes;
+    float quota = (int)(totalNumQuotaAttributes * 0.3);
+    float remainder = quota;
 
     // generate array of numbers
-    int[] array = new int[totalNumQuotaAttributes];
+    float[] array = new float[totalNumQuotaAttributes];
     int currentIndex = 0;
     while (remainder > 0) {
-      float assigningValue = (int) random(1, constrain(remainder - unassigned, 1, maxValue - array[currentIndex]) + 1);
+      float assigningValue = random(0, constrain(remainder, 0, 1 - array[currentIndex]));
       array[currentIndex] += assigningValue;
-      unassigned--;
       remainder -= assigningValue;
+      if (remainder <= EPSILON)
+        remainder = 0;
       currentIndex++;
       if (currentIndex > array.length - 1) {
         currentIndex = 0;
@@ -101,7 +96,7 @@ public class Enemy {
     // randomize array order
     for (int i = 0; i < array.length; i++) {
       int newIndex = (int)random(0, array.length);
-      int temp = array[i];
+      float temp = array[i];
       array[i] = array[newIndex];
       array[newIndex] = temp;
     }
@@ -109,39 +104,41 @@ public class Enemy {
     int index = 0;
 
     // attributes common to all states
-    health = array[index++];
+    health = (int) mapAttribute(array[index++], 3, 3, 3, 12, 12, 30);
+    currentHealth = health;
 
     for (int i = 0; i < states.length; i++) {
       // attributes common to all routines
-      states[i].forwardVisionLength = array[index++];
-      states[i].proximityDetectionRadius = array[index++];
-      states[i].heatSenseThreshold = array[index++];
+      states[i].forwardVisionLength = (int) mapAttribute(array[index++], 0, 10, 20, 60, 60, 120) + radius;
+      states[i].proximityDetectionRadius = (int) mapAttribute(array[index++], 0, 5, 10, 40, 50, 80) + radius;
+      states[i].heatSenseThreshold = (int) mapAttribute(array[index++], 0, 50, 50, 150, 150, 200);
 
       // attributes unique within each routine
       for (int j = 0; j < states[i].routines.length; j++) {
-        states[i].routines[j].forwardSpeed = random(0, maxValue);
+        states[i].routines[j].duration = 1;
+        states[i].routines[j].forwardSpeed = mapAttribute(random(0, 1), 0, 0.5, 1, 5, 6, 10);
         if (i == PATROL) {
-          states[i].routines[j].rotationSpeed = random(0, maxValue);
+          states[i].routines[j].rotationSpeed = mapAttribute(random(0, 1), 0, 0.05, 0.05, 0.25, 0.3, 0.5) * pow(-1, (int)random(1, 3));
         } else {
-          states[i].routines[j].rotationSpeed = array[index++];
+          states[i].routines[j].rotationSpeed = mapAttribute(array[index++], 0, 0.05, 0.05, 0.25, 0.3, 0.5) * pow(-1, (int)random(1, 3));
         }
-        states[i].routines[j].shootCooldown = array[index++];
+        states[i].routines[j].shootCooldown = mapAttribute(array[index++], 4, 2, 2, 0.5, 0.25, 0.1);
+        states[i].routines[j].bulletSpeed = mapAttribute(random(0, 1), 0, 1, 6, 10, 10, 15);
+        states[i].routines[j].bulletDamage = (int) mapAttribute(array[index++], 1, 2, 3, 8, 12, 15);
       }
     }
   }
 
-  private float scaleForwardSpeed(int value) {
-    if (value < 10) {
-      return 0;
+  private float mapAttribute(float value, float min1, float min2, float mid1, float mid2, float max1, float max2) {
+    float result = 0;
+    if (value < 0.2) {
+      result = map(value, 0, 0.2, min1, min2);
+    } else if (value < 0.8) {
+      result = map(value, 0.2, 0.8, mid1, mid2);
     } else {
-      return value/4;
+      result = map(value, 0.8, 1, max1, max2);
     }
-  }
-  
-  private void getStandardCurve(int value) {
-    // from 0 to 10, quadratic up
-    // from 10 to 40, linear
-    // from 40 to 50, quadratic down
+    return result;
   }
 
   private void movePatrol() {
@@ -270,7 +267,9 @@ public class Enemy {
     shootTimer += timer.deltaTime;
 
     if (shootTimer > states[currentState].routines[currentRoutine].shootCooldown) {
-      enemyBullets.add(new EnemyBullet(x, y, direction.copy(), radius));
+      float s = states[currentState].routines[currentRoutine].bulletSpeed;
+      int d = states[currentState].routines[currentRoutine].bulletDamage;
+      enemyBullets.add(new EnemyBullet(x, y, direction.copy(), radius, s, d));
       shootTimer = 0;
     }
   }
@@ -362,8 +361,11 @@ public class Enemy {
         initRoutines(3); 
         break;
       case TRACK: 
+        initRoutines(1);
+        break;
       case ATTACK: 
         initRoutines(1);
+        break;
       }
     }
 
@@ -376,7 +378,7 @@ public class Enemy {
 
     private class Routine {
       // routine specific
-      int duration;
+      float duration;
 
       // movement specific
       float forwardSpeed;
@@ -384,6 +386,8 @@ public class Enemy {
 
       // attack specific
       float shootCooldown;
+      float bulletSpeed;
+      int bulletDamage;
     }
   }
 }
