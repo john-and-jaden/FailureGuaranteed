@@ -253,6 +253,7 @@ public class Enemy {
   private void setState(int state) {
     this.currentState = state;
     disengageTimer = 0;
+    currentRoutine = 0;
   }
 
   private void disengage() {
