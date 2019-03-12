@@ -270,6 +270,7 @@ public class Enemy {
       float s = states[currentState].routines[currentRoutine].bulletSpeed;
       int d = states[currentState].routines[currentRoutine].bulletDamage;
       enemyBullets.add(new EnemyBullet(x, y, direction.copy(), radius, s, d));
+      shootDisplay();
       shootTimer = 0;
     }
   }
@@ -332,6 +333,10 @@ public class Enemy {
     textAlign(CENTER, CENTER);
     fill(0);
     text(currentHealth, x, y + radius*2);
+  }
+  
+  private void shootDisplay() {
+    
   }
 
   private float modAngle(float a) {
