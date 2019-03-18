@@ -1,8 +1,11 @@
 public class EnemyBullet extends Bullet {
   public EnemyBullet(float x, float y, PVector direction, float spawnDistance, float speed, int damage) {
-    super(x, y, direction, spawnDistance, speed, damage);
+    super(x, y, direction, speed, damage);
     // You can modify this
     radius = 3;
+    this.x += (direction.x * (radius + spawnDistance));
+    this.y += (direction.y * (radius + spawnDistance));
+    display();
   }
 
   public void update() {

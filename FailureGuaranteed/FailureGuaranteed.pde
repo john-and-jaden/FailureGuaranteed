@@ -1,6 +1,7 @@
 Player player;
 ArrayList<PlayerBullet> playerBullets;
 ArrayList<EnemyBullet> enemyBullets;
+ArrayList<EffectParticle> effectParticles;
 HeatTrail heatTrail;
 EnemyController enemyController;
 Timer timer;
@@ -16,6 +17,7 @@ void setup() {
   player = new Player();
   playerBullets = new ArrayList<PlayerBullet>();
   enemyBullets = new ArrayList<EnemyBullet>();
+  effectParticles = new ArrayList<EffectParticle>();
   enemyController = new EnemyController();
 }
 
@@ -42,6 +44,15 @@ void draw() {
     }
   }
   enemyBullets.removeAll(flaggedEnemyBullets);
+  
+  ArrayList<EffectParticle> flaggedEffectParticles = new ArrayList<EffectParticle>();
+  for (EffectParticle particle : effectParticles) {
+    particle.update();
+    if (particle.isFlagged()) {
+      flaggedEffectParticles.add(particle); 
+    }
+  }
+  effectParticles.removeAll(flaggedEffectParticles);
 }
 
 void keyPressed() {

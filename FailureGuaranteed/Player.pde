@@ -1,6 +1,7 @@
 public class Player {
   private float x, y;
   private float radius;
+  private float cannonLength;
   private float speed;
   private int health;
   private float shootCooldown;
@@ -10,18 +11,21 @@ public class Player {
   private float trailSpawnTimer;
   private int currentHealth;
   private float right, left, up, down;
+  private boolean hasShot;
 
   public Player() {
     // You can modify this
     x = width/2;
     y = height/2;
     radius = 20;
+    cannonLength = 15;
     speed = 5;
     health = 30;
     shootCooldown = 0.2;
     trailSpawnCooldown = 0;
     
     // Don't modify this
+    hasShot = false;
     currentHealth = health;
     shootTimer = 0;
     trailSpawnTimer = 0;
@@ -52,7 +56,8 @@ public class Player {
   
   public void shoot() {
     if (shootTimer > shootCooldown) {
-      playerBullets.add(new PlayerBullet(x, y, getMouseDirection(), radius));
+      playerBullets.add(new PlayerBullet(x, y, getMouseDirection(), radius + cannonLength));
+      hasShot = true;
       shootTimer = 0;
     }
   }
@@ -82,14 +87,51 @@ public class Player {
   }
 
   private void display() {
+    // Cannon
+    fill(30);
+    stroke(0);
+    strokeWeight(2);
+    float cannonWidth = 10;
+    PVector mouseDir = getMouseDirection().mult(radius + cannonLength);
+    PVector parallelDir = getMouseDirection().rotate(PI/2).mult(cannonWidth/2);
+    quad(
+      x + parallelDir.x, y + parallelDir.y,
+      x + parallelDir.x + mouseDir.x, y + parallelDir.y + mouseDir.y,
+      x - parallelDir.x + mouseDir.x, y - parallelDir.y + mouseDir.y,
+      x - parallelDir.x, y - parallelDir.y
+    );
+
+    // Player
     fill(0, 255, 200);
     stroke(0);
     strokeWeight(2);
     ellipse(x, y, radius*2, radius*2);
+    
+    // Health text
     textSize(20);
     textAlign(CENTER, CENTER);
     fill(0);
     text(currentHealth, x, y + radius*2);
+    
+    // Bullet effects
+    if (hasShot) {
+      hasShot = false;
+      shootDisplay();
+    }
+  }
+  
+  private void shootDisplay() {
+    fill(255, 255, 0);
+    noStroke();
+    for (int i = 0; i < 3; i++) {
+      float size = 8;
+      float speed = 2 + this.speed;
+      float lifetime = 0.1;
+      float spread = random(-PI/8, PI/8);
+      PVector mouseDir = getMouseDirection();
+      PVector spreadDir = getMouseDirection().rotate(spread);
+      effectParticles.add(new EffectParticle(x + mouseDir.x * (radius + cannonLength), y + mouseDir.y * (radius + cannonLength), size, spreadDir, speed, lifetime));
+    }
   }
   
   private PVector getMouseDirection() {

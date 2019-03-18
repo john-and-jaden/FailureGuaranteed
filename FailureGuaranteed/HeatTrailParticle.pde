@@ -19,6 +19,7 @@ public class HeatTrailParticle extends DestroyableObject {
     this.x = x;
     this.y = y;
     heatLevel = maxHeatLevel;
+    display();
   }
   
   public void update() {

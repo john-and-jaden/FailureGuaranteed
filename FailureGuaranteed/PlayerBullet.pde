@@ -1,10 +1,13 @@
 public class PlayerBullet extends Bullet {
   public PlayerBullet(float x, float y, PVector direction, float spawnDistance) {
-    super(x, y, direction, spawnDistance);
+    super(x, y, direction);
     // You can modify this
     radius = 5;
     speed = 10;
     damage = 3;
+    this.x += (direction.x * (radius + spawnDistance));
+    this.y += (direction.y * (radius + spawnDistance));
+    display();
   }
 
   public void update() {

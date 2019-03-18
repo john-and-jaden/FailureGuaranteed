@@ -3,6 +3,7 @@ public class Enemy {
   private float x, y;
   private PVector direction;
   private float radius;
+  private float cannonLength;
   private int health;
   private float disengageDelay;
 
@@ -13,6 +14,7 @@ public class Enemy {
   private float routineTimer;
   private float shootTimer;
   private int currentHealth;
+  private boolean hasShot;
   private HeatTrailParticle targetParticle;
   int totalNumQuotaAttributes;
   private boolean disabled;
@@ -23,6 +25,7 @@ public class Enemy {
     y = height / 2 + random(-height / 3, height / 3); 
     direction = new PVector(-1, 0);
     radius = random(8, 16);
+    cannonLength = radius * 0.75;
     disengageDelay = 1;
     totalNumQuotaAttributes = 22;
 
@@ -32,6 +35,7 @@ public class Enemy {
     disengageTimer = 0;
     currentState = 0;
     initStates();
+    hasShot = false;
     disabled = false;
   }
 
@@ -156,9 +160,9 @@ public class Enemy {
     float heading = modAngle(targetDirection.heading() - direction.heading());
     heading = -Math.signum(heading - PI);
 
-    direction.rotate(0.12 * heading);
-    x = constrain(x + direction.x * 5, radius, width - radius);
-    y = constrain(y + direction.y * 5, radius, height - radius);
+    direction.rotate(states[currentState].routines[currentRoutine].rotationSpeed * heading);
+    x = constrain(x + direction.x * states[currentState].routines[currentRoutine].forwardSpeed, radius, width - radius);
+    y = constrain(y + direction.y * states[currentState].routines[currentRoutine].forwardSpeed, radius, height - radius);
     bounceOffWalls();
   }
 
@@ -167,10 +171,10 @@ public class Enemy {
     float heading = modAngle(targetDirection.heading() - direction.heading());
     heading = -Math.signum(heading - PI);
 
-    direction.rotate(0.04 * heading);
+    direction.rotate(states[currentState].routines[currentRoutine].rotationSpeed * heading);
     if (dist(player.x, player.y, x, y) > player.radius + states[currentState].forwardVisionLength) {
-      x = constrain(x + direction.x * 5, radius, width - radius);
-      y = constrain(y + direction.y * 5, radius, height - radius);
+      x = constrain(x + direction.x * states[currentState].routines[currentRoutine].forwardSpeed, radius, width - radius);
+      y = constrain(y + direction.y * states[currentState].routines[currentRoutine].forwardSpeed, radius, height - radius);
     }
     bounceOffWalls();
   }
@@ -269,8 +273,8 @@ public class Enemy {
     if (shootTimer > states[currentState].routines[currentRoutine].shootCooldown) {
       float s = states[currentState].routines[currentRoutine].bulletSpeed;
       int d = states[currentState].routines[currentRoutine].bulletDamage;
-      enemyBullets.add(new EnemyBullet(x, y, direction.copy(), radius, s, d));
-      shootDisplay();
+      enemyBullets.add(new EnemyBullet(x, y, direction.copy(), radius + cannonLength, s, d));
+      hasShot = true;
       shootTimer = 0;
     }
   }
@@ -309,34 +313,67 @@ public class Enemy {
   }
 
   private void display() {
+    // Attack vision
     if (currentState == ATTACK) {
       fill(255, 100, 0, 50);
       noStroke();
       arc(x, y, states[currentState].attackVisionDistance, states[currentState].attackVisionDistance, 
         direction.heading() - states[currentState].attackVisionAngle, direction.heading() + states[currentState].attackVisionAngle, PIE);
     }
-
+    
+    // Proximity vision
     fill(0, 100, 255, 25);
     noStroke();
     ellipse(x, y, states[currentState].proximityDetectionRadius * 2, states[currentState].proximityDetectionRadius * 2);
 
+    // Forward vision
     stroke(200, 0, 255);
     strokeWeight(2);
     line(x, y, x + direction.x * states[currentState].forwardVisionLength, y + direction.y * states[currentState].forwardVisionLength);
-
+    
+    // Cannon
+    fill(30);
+    stroke(0);
+    strokeWeight(2);
+    float cannonWidth = radius/2;
+    PVector mouseDir = direction.copy().mult(radius + cannonLength);
+    PVector parallelDir = direction.copy().rotate(PI/2).mult(cannonWidth/2);
+    quad(
+      x + parallelDir.x, y + parallelDir.y,
+      x + parallelDir.x + mouseDir.x, y + parallelDir.y + mouseDir.y,
+      x - parallelDir.x + mouseDir.x, y - parallelDir.y + mouseDir.y,
+      x - parallelDir.x, y - parallelDir.y
+    );
+    
+    // Enemy
     fill(255, 0, 0);
     stroke(0);
     strokeWeight(2);
     ellipse(x, y, radius * 2, radius * 2);
 
+    // Health text
     textSize(20);
     textAlign(CENTER, CENTER);
     fill(0);
     text(currentHealth, x, y + radius*2);
+    
+    if (hasShot) {
+      hasShot = false;
+      shootDisplay();
+    }
   }
   
   private void shootDisplay() {
-    
+    fill(255, 255, 0);
+    noStroke();
+    for (int i = 0; i < 3; i++) {
+      float size = radius/2;
+      float speed = 2 + states[currentState].routines[currentRoutine].forwardSpeed;
+      float lifetime = 0.1;
+      float spread = random(-PI/8, PI/8);
+      PVector spreadDir = direction.copy().rotate(spread);
+      effectParticles.add(new EffectParticle(x + direction.x * (radius + cannonLength), y + direction.y * (radius + cannonLength), size, spreadDir, speed, lifetime));
+    }
   }
 
   private float modAngle(float a) {
