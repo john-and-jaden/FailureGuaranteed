@@ -6,7 +6,7 @@ HeatTrail heatTrail;
 EnemyController enemyController;
 Timer timer;
 
-// Should we moive this back into the Enemy class? 
+// Should we move this back into the Enemy class? 
 public final int PATROL = 0, TRACK = 1, ATTACK = 2;
 
 void setup() {
