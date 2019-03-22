@@ -4,7 +4,7 @@ public abstract class Bullet extends DestroyableObject {
   protected float speed;
   protected int damage;
   protected PVector direction;
-
+  
   public Bullet(float x, float y, PVector direction, float speed, int damage) {
     this.x = x;
     this.y = y;

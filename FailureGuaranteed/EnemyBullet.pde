@@ -1,10 +1,13 @@
 public class EnemyBullet extends Bullet {
-  public EnemyBullet(float x, float y, PVector direction, float spawnDistance, float speed, int damage) {
+  Enemy parent;
+  
+  public EnemyBullet(float x, float y, PVector direction, float spawnDistance, float speed, int damage, Enemy parent) {
     super(x, y, direction, speed, damage);
     // You can modify this
     radius = 3;
     this.x += (direction.x * (radius + spawnDistance));
     this.y += (direction.y * (radius + spawnDistance));
+    this.parent = parent;
     display();
   }
 
@@ -13,6 +16,7 @@ public class EnemyBullet extends Bullet {
 
     if (dist(x, y, player.x, player.y) < radius + player.radius) {
       player.takeDamage(damage);
+      parent.damageDealt += damage;
       flag();
     }
 

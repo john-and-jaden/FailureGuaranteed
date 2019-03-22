@@ -9,11 +9,11 @@ public class PlayerBullet extends Bullet {
     this.y += (direction.y * (radius + spawnDistance));
     display();
   }
-
+  
   public void update() {
     if (isFlagged())
       return;
-    
+      
     super.update();
     
     for (Enemy e : enemyController.enemies) {

@@ -19,6 +19,13 @@ public class Enemy {
   int totalNumQuotaAttributes;
   private boolean disabled;
 
+  // genetic algorothm related:
+  float fitness;
+  float attackTimer;
+  float trackTimer;
+  float lifetime;
+  int damageDealt;
+  
   public Enemy() {
     // You can change this
     x = width - random(radius, width / 6);
@@ -37,24 +44,33 @@ public class Enemy {
     initStates();
     hasShot = false;
     disabled = false;
-  }
 
+    // genetic algorithm
+    fitness = 0;
+    attackTimer = 0;
+    trackTimer = 0;
+    lifetime = 0; 
+  }
+  
   public void update() {
     if (disabled)
       return;
+    lifetime += timer.deltaTime;
     updateRoutines();
     disengage();
     search();
     shoot();
-
+    
     switch (currentState) {
     case PATROL: 
       movePatrol();
       break;
     case TRACK: 
+      trackTimer += timer.deltaTime;
       trackHeat();
       break;
     case ATTACK: 
+      attackTimer += timer.deltaTime;
       followPlayer();
       break;
     }
@@ -273,7 +289,7 @@ public class Enemy {
     if (shootTimer > states[currentState].routines[currentRoutine].shootCooldown) {
       float s = states[currentState].routines[currentRoutine].bulletSpeed;
       int d = states[currentState].routines[currentRoutine].bulletDamage;
-      enemyBullets.add(new EnemyBullet(x, y, direction.copy(), radius + cannonLength, s, d));
+      enemyBullets.add(new EnemyBullet(x, y, direction.copy(), radius + cannonLength, s, d, this));
       hasShot = true;
       shootTimer = 0;
     }
@@ -304,14 +320,14 @@ public class Enemy {
     currentHealth = health;
     disabled = false;
   }
-
+  
   private void disable() {
     disabled = true;
     currentHealth = 0;
     x = -radius*2;
     y = -radius*2;
   }
-
+  
   private void display() {
     // Attack vision
     if (currentState == ATTACK) {
@@ -320,7 +336,7 @@ public class Enemy {
       arc(x, y, states[currentState].attackVisionDistance, states[currentState].attackVisionDistance, 
         direction.heading() - states[currentState].attackVisionAngle, direction.heading() + states[currentState].attackVisionAngle, PIE);
     }
-    
+
     // Proximity vision
     fill(0, 100, 255, 25);
     noStroke();
@@ -330,7 +346,7 @@ public class Enemy {
     stroke(200, 0, 255);
     strokeWeight(2);
     line(x, y, x + direction.x * states[currentState].forwardVisionLength, y + direction.y * states[currentState].forwardVisionLength);
-    
+
     // Cannon
     fill(30);
     stroke(0);
@@ -339,12 +355,12 @@ public class Enemy {
     PVector mouseDir = direction.copy().mult(radius + cannonLength);
     PVector parallelDir = direction.copy().rotate(PI/2).mult(cannonWidth/2);
     quad(
-      x + parallelDir.x, y + parallelDir.y,
-      x + parallelDir.x + mouseDir.x, y + parallelDir.y + mouseDir.y,
-      x - parallelDir.x + mouseDir.x, y - parallelDir.y + mouseDir.y,
+      x + parallelDir.x, y + parallelDir.y, 
+      x + parallelDir.x + mouseDir.x, y + parallelDir.y + mouseDir.y, 
+      x - parallelDir.x + mouseDir.x, y - parallelDir.y + mouseDir.y, 
       x - parallelDir.x, y - parallelDir.y
-    );
-    
+      );
+
     // Enemy
     fill(255, 0, 0);
     stroke(0);
@@ -356,13 +372,13 @@ public class Enemy {
     textAlign(CENTER, CENTER);
     fill(0);
     text(currentHealth, x, y + radius*2);
-    
+
     if (hasShot) {
       hasShot = false;
       shootDisplay();
     }
   }
-  
+
   private void shootDisplay() {
     fill(255, 255, 0);
     noStroke();
