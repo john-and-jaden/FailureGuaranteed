@@ -87,6 +87,12 @@ public class Player {
   }
 
   private void display() {
+    // Bullet effects
+    if (hasShot) {
+      hasShot = false;
+      shootDisplay();
+    }
+    
     // Cannon
     fill(30);
     stroke(0);
@@ -112,12 +118,6 @@ public class Player {
     textAlign(CENTER, CENTER);
     fill(0);
     text(currentHealth, x, y + radius*2);
-    
-    // Bullet effects
-    if (hasShot) {
-      hasShot = false;
-      shootDisplay();
-    }
   }
   
   private void shootDisplay() {
