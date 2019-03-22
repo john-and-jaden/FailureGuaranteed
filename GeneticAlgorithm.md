@@ -30,3 +30,10 @@ Un = 0
 
 So, the formula is: 
 stat += rand(constrain(Remainder - Unassigned, 1, Max Value - stat))
+
+Calculate fitness of an enemy based on the following attributes:
+
+- Lifetime
+- Damage dealt to the player
+- Amount of time spent in attack state
+- Amount of time spent in track state
