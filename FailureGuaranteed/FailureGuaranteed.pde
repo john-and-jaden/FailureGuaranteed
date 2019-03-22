@@ -24,6 +24,16 @@ void setup() {
 void draw() { 
   background(255);
   timer.update();
+  
+  ArrayList<EffectParticle> flaggedEffectParticles = new ArrayList<EffectParticle>();
+  for (EffectParticle particle : effectParticles) {
+    particle.update();
+    if (particle.isFlagged()) {
+      flaggedEffectParticles.add(particle); 
+    }
+  }
+  effectParticles.removeAll(flaggedEffectParticles);
+  
   enemyController.update();
   heatTrail.update();
   player.update();
@@ -44,15 +54,6 @@ void draw() {
     }
   }
   enemyBullets.removeAll(flaggedEnemyBullets);
-  
-  ArrayList<EffectParticle> flaggedEffectParticles = new ArrayList<EffectParticle>();
-  for (EffectParticle particle : effectParticles) {
-    particle.update();
-    if (particle.isFlagged()) {
-      flaggedEffectParticles.add(particle); 
-    }
-  }
-  effectParticles.removeAll(flaggedEffectParticles);
 }
 
 void keyPressed() {

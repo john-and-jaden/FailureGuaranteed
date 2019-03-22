@@ -140,7 +140,7 @@ public class Enemy {
         if (i == PATROL) {
           states[i].routines[j].rotationSpeed = mapAttribute(random(0, 1), 0, 0.05, 0.05, 0.25, 0.3, 0.5) * pow(-1, (int)random(1, 3));
         } else {
-          states[i].routines[j].rotationSpeed = mapAttribute(array[index++], 0, 0.05, 0.05, 0.25, 0.3, 0.5) * pow(-1, (int)random(1, 3));
+          states[i].routines[j].rotationSpeed = mapAttribute(array[index++], 0, 0.05, 0.05, 0.25, 0.3, 0.5);
         }
         states[i].routines[j].shootCooldown = mapAttribute(array[index++], 4, 2, 2, 0.5, 0.25, 0.1);
         states[i].routines[j].bulletSpeed = mapAttribute(random(0, 1), 0, 1, 6, 10, 10, 15);
