@@ -1,4 +1,4 @@
-public final int GAME_SCENE = 0, TRANSITION_SCENE = 1, DEATH_SCENE = 2;
+public final int GAME_SCENE = 0, TRANSITION_SCENE = 1;
 
 Player player;
 ArrayList<PlayerBullet> playerBullets;
@@ -21,7 +21,7 @@ void setup() {
   enemyBullets = new ArrayList<EnemyBullet>();
   effectParticles = new ArrayList<EffectParticle>();
   enemyController = new EnemyController();
-  scene = GAME_SCENE;
+  scene = TRANSITION_SCENE;
   wave = 0;
   gameTimer = 0;
 }
@@ -36,32 +36,21 @@ void draw() {
   case TRANSITION_SCENE:
     transition();
     break;
-  case DEATH_SCENE:
-    death();
-    break;
   }
 }
 
 public void changeScene(int newScene) {
   scene = newScene;
-  
-  if (scene == GAME_SCENE) {
-    // we gotta clear bullets and effect particles
-    playerBullets.clear();
-    enemyBullets.clear();
-    effectParticles.clear();
+  // we gotta clear bullets and effect particles
+  // gameTimer set to 0
+  // reset player position
+  // reset the player's heat trail
+  switch(newScene) {
+  case GAME_SCENE:
     
-    // gameTimer set to 0
-    gameTimer = 0;
-    
-    // reset player position and stats
-    player.respawn();
-    
-    // reset the player's heat trail
-    heatTrail = new HeatTrail();
-    
-    // increase the wave count
-    wave++;
+    break;
+  case TRANSITION_SCENE:
+    break;
   }
 }
 
@@ -109,16 +98,6 @@ private void transition() {
   text("The wave lasted " + gameTimer + " seconds", width/2, height/2);
 }
 
-private void death() {
-  background(0);
-  textAlign(CENTER, CENTER);
-  textSize(40);
-  text("You have died!", width/2, height/3);
-  textSize(32);
-  text("You survived " + gameTimer + " seconds", width/2, height/2);
-  text("You have " + player.remainingLives + " lives remaining", width/2, 2*height/3);
-}
-
 void keyPressed() {
   if (scene == GAME_SCENE) {
     if (keyCode == 'W' || keyCode == UP)
@@ -148,7 +127,7 @@ void keyReleased() {
 void mousePressed() {
   if (scene == GAME_SCENE) {
     player.shoot();
-  } else if (scene == TRANSITION_SCENE || scene == DEATH_SCENE) {
-    changeScene(GAME_SCENE);
+  } else if (scene == TRANSITION_SCENE) {
+    
   }
 }

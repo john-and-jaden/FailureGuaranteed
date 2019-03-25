@@ -1,5 +1,6 @@
 public class Player {
   private float x, y;
+  private int totalLives;
   private float radius;
   private float cannonLength;
   private float speed;
@@ -7,6 +8,7 @@ public class Player {
   private float shootCooldown;
   private float trailSpawnCooldown;
   
+  private int remainingLives;
   private float shootTimer;
   private float trailSpawnTimer;
   private int currentHealth;
@@ -17,6 +19,7 @@ public class Player {
     // You can modify this
     x = width/2;
     y = height/2;
+    totalLives = 3;
     radius = 20;
     cannonLength = 15;
     speed = 5;
@@ -25,6 +28,7 @@ public class Player {
     trailSpawnCooldown = 0;
     
     // Don't modify this
+    remainingLives = totalLives;
     hasShot = false;
     currentHealth = health;
     shootTimer = 0;
@@ -46,11 +50,24 @@ public class Player {
     display();
   }
   
+  public void respawn() {
+    x = width/2;
+    y = height/2;
+    hasShot = false;
+    currentHealth = health;
+    shootTimer = 0;
+    trailSpawnTimer = 0;
+  }
+  
   public void takeDamage(int damage) {
     currentHealth -= damage;
     
     if (currentHealth <= 0) {
-      // lose a life, go to next wave 
+      remainingLives--;
+      
+      if (remainingLives <= 0) {
+        changeScene(DEATH_SCENE); 
+      }
     }
   }
   
