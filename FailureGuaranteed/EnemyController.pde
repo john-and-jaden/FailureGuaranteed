@@ -43,7 +43,7 @@ public class EnemyController {
       float maxTrackTimer = -1;
       float maxLifetime = -1;
       int maxDamageDealt = -1;
-
+      
       for (Enemy e : enemies) {
         if (e.attackTimer > maxAttackTimer)
           maxAttackTimer = e.attackTimer;
@@ -54,12 +54,22 @@ public class EnemyController {
         if (e.damageDealt > maxDamageDealt)
           maxDamageDealt = e.damageDealt;
       }
-
+      
+      println("Max Attack Timer:" + maxAttackTimer);
+      println("Max Track Timer:" + maxTrackTimer);
+      println("Max Lifetime:" + maxLifetime);
+      println("Max Damage Dealt:" + maxDamageDealt);
+      
       for (Enemy e : enemies) {
-        e.fitness = (e.attackTimer / maxAttackTimer) * attackTimerWeight;
-        e.fitness += (e.trackTimer / maxTrackTimer) * trackTimerWeight;
-        e.fitness += (e.lifetime / maxLifetime) * lifetimeWeight;
-        e.fitness += (e.damageDealt / maxDamageDealt) * damageDealtWeight;
+        e.fitness = 0;
+        if (maxAttackTimer != 0)
+          e.fitness += (e.attackTimer / maxAttackTimer) * attackTimerWeight;
+        if (maxTrackTimer != 0)
+          e.fitness += (e.trackTimer / maxTrackTimer) * trackTimerWeight;
+        if (maxLifetime != 0)
+          e.fitness += (e.lifetime / maxLifetime) * lifetimeWeight;
+        if (maxDamageDealt != 0)
+          e.fitness += (e.damageDealt / maxDamageDealt) * damageDealtWeight;
       }
 
       for (Enemy e : enemies) {

@@ -6,6 +6,10 @@ public class Enemy {
   private float cannonLength;
   private int health;
   private float disengageDelay;
+  private float attackVisionDistance;
+  private float attackVisionAngle;
+  private float heatVisionLength;
+  private float heatSenseThreshold;
 
   State[] states;
   private int currentRoutine;
@@ -34,7 +38,7 @@ public class Enemy {
     radius = random(8, 16);
     cannonLength = radius * 0.75;
     disengageDelay = 1;
-    totalNumQuotaAttributes = 22;
+    totalNumQuotaAttributes = 23;
 
     // Don't change this
     currentState = PATROL;
@@ -50,6 +54,7 @@ public class Enemy {
     attackTimer = 0;
     trackTimer = 0;
     lifetime = 0; 
+    damageDealt = 0;
   }
   
   public void update() {
@@ -125,13 +130,16 @@ public class Enemy {
 
     // attributes common to all states
     health = (int) mapAttribute(array[index++], 3, 3, 3, 12, 12, 30);
+    attackVisionDistance = (int) mapAttribute(array[index++], 0, 20, 30, 100, 120, 200) + radius;
+    attackVisionAngle = mapAttribute(array[index++], 0, PI/12, PI/10, PI/8, PI/6, PI/4);
+    heatSenseThreshold = (int) mapAttribute(array[index++], 0, 50, 50, 150, 150, 200);
+    heatVisionLength = (int) mapAttribute(array[index++], 0, 10, 20, 60, 60, 120) + radius;
     currentHealth = health;
 
     for (int i = 0; i < states.length; i++) {
       // attributes common to all routines
       states[i].forwardVisionLength = (int) mapAttribute(array[index++], 0, 10, 20, 60, 60, 120) + radius;
       states[i].proximityDetectionRadius = (int) mapAttribute(array[index++], 0, 5, 10, 40, 50, 80) + radius;
-      states[i].heatSenseThreshold = (int) mapAttribute(array[index++], 0, 50, 50, 150, 150, 200);
 
       // attributes unique within each routine
       for (int j = 0; j < states[i].routines.length; j++) {
@@ -211,8 +219,8 @@ public class Enemy {
       PVector targetDirection = new PVector(player.x - x, player.y - y);
       float heading = modAngle(targetDirection.heading() - direction.heading());
       float range = Math.abs(heading - PI);
-      if (range > PI - states[currentState].attackVisionAngle 
-        && dist(player.x, player.y, x, y) < states[currentState].attackVisionDistance) {
+      if (range > PI - attackVisionAngle 
+        && dist(player.x, player.y, x, y) < attackVisionDistance) {
         setState(ATTACK);
       }
     }
@@ -237,7 +245,7 @@ public class Enemy {
         if (targetParticle != null) {
           continue;
         }
-        if (dist(p.x, p.y, x, y) < radius && p.heatLevel > states[currentState].heatSenseThreshold) {
+        if (dist(p.x, p.y, x, y) < radius && p.heatLevel > heatSenseThreshold) {
           setState(TRACK);
           targetParticle = p.next;
         }
@@ -248,13 +256,13 @@ public class Enemy {
         if (currentState == TRACK) {
           setState(PATROL);
         }
-      } else if (targetParticle.heatLevel > states[currentState].heatSenseThreshold && currentState == TRACK) {
+      } else if (targetParticle.heatLevel > heatSenseThreshold && currentState == TRACK) {
         if (dist(targetParticle.x, targetParticle.y, x, y) < radius) {
           setState(TRACK);
           targetParticle = targetParticle.next;
         }
         for (HeatTrailParticle p : heatTrail.particles) {
-          for (int i = 0; i < states[currentState].heatVisionLength; i++) {
+          for (int i = 0; i < heatVisionLength; i++) {
             float detectX = x + direction.x * i;
             float detectY = y + direction.y * i;
             if (dist(p.x, p.y, detectX, detectY) < p.radius) {
@@ -333,8 +341,8 @@ public class Enemy {
     if (currentState == ATTACK) {
       fill(255, 100, 0, 50);
       noStroke();
-      arc(x, y, states[currentState].attackVisionDistance, states[currentState].attackVisionDistance, 
-        direction.heading() - states[currentState].attackVisionAngle, direction.heading() + states[currentState].attackVisionAngle, PIE);
+      arc(x, y, attackVisionDistance, attackVisionDistance, 
+        direction.heading() - attackVisionAngle, direction.heading() + attackVisionAngle, PIE);
     }
 
     // Proximity vision
@@ -400,12 +408,8 @@ public class Enemy {
 
   private class State {
     int typeOfState;
-    float attackVisionDistance;
-    float attackVisionAngle;
     float forwardVisionLength;
     float proximityDetectionRadius;
-    float heatVisionLength;
-    float heatSenseThreshold;
     Routine[] routines;
 
     State(int typeOfState) {
