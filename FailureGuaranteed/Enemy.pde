@@ -23,7 +23,7 @@ public class Enemy {
   int totalNumQuotaAttributes;
   private boolean disabled;
 
-  // genetic algorothm related:
+  // genetic algorithm related:
   float fitness;
   float attackTimer;
   float trackTimer;
