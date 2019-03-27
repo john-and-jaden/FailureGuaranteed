@@ -6,7 +6,7 @@ public class EnemyController {
   float trackTimerWeight;
   float lifetimeWeight;
   float damageDealtWeight;
-
+  
   EnemyController() {
     // You can modify this
     numberEnemies = 4;
@@ -79,7 +79,13 @@ public class EnemyController {
         e.relativeFitness = e.fitness / totalFitness; 
       }
       
-      Enemy child = getFittestEnemy();
+      Enemy child = null;
+      try {
+        child = (Enemy) getFittestEnemy().clone();
+      } catch(CloneNotSupportedException e) {
+        println("yeet");
+      }
+      
       
       for (Enemy e : enemies) {
         println(e.fitness);
