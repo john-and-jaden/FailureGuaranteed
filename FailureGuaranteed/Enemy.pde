@@ -12,6 +12,7 @@ public class Enemy implements Cloneable {
   private float heatSenseThreshold;
 
   State[] states;
+  public float[] attributeWeights;
   private int currentRoutine;
   private int currentState;
   private float disengageTimer;
@@ -105,42 +106,42 @@ public class Enemy implements Cloneable {
     float remainder = quota;
 
     // generate array of numbers
-    float[] array = new float[totalNumQuotaAttributes];
+    attributeWeights = new float[totalNumQuotaAttributes];
     int currentIndex = 0;
     while (remainder > 0) {
-      float assigningValue = random(0, constrain(remainder, 0, 1 - array[currentIndex]));
-      array[currentIndex] += assigningValue;
+      float assigningValue = random(0, constrain(remainder, 0, 1 - attributeWeights[currentIndex]));
+      attributeWeights[currentIndex] += assigningValue;
       remainder -= assigningValue;
       if (remainder <= EPSILON)
         remainder = 0;
       currentIndex++;
-      if (currentIndex > array.length - 1) {
+      if (currentIndex > attributeWeights.length - 1) {
         currentIndex = 0;
       }
     }
-
+    
     // randomize array order
-    for (int i = 0; i < array.length; i++) {
-      int newIndex = (int)random(0, array.length);
-      float temp = array[i];
-      array[i] = array[newIndex];
-      array[newIndex] = temp;
+    for (int i = 0; i < attributeWeights.length; i++) {
+      int newIndex = (int)random(0, attributeWeights.length);
+      float temp = attributeWeights[i];
+      attributeWeights[i] = attributeWeights[newIndex];
+      attributeWeights[newIndex] = temp;
     }
 
     int index = 0;
 
     // attributes common to all states
-    health = (int) mapAttribute(array[index++], 3, 3, 3, 12, 12, 30);
-    attackVisionDistance = (int) mapAttribute(array[index++], 0, 20, 30, 100, 120, 200) + radius;
-    attackVisionAngle = mapAttribute(array[index++], 0, PI/12, PI/10, PI/8, PI/6, PI/4);
-    heatSenseThreshold = (int) mapAttribute(array[index++], 0, 50, 50, 150, 150, 200);
-    heatVisionLength = (int) mapAttribute(array[index++], 0, 10, 20, 60, 60, 120) + radius;
+    health = (int) mapAttribute(attributeWeights[index++], 3, 3, 3, 12, 12, 30);
+    attackVisionDistance = (int) mapAttribute(attributeWeights[index++], 0, 20, 30, 100, 120, 200) + radius;
+    attackVisionAngle = mapAttribute(attributeWeights[index++], 0, PI/12, PI/10, PI/8, PI/6, PI/4);
+    heatSenseThreshold = (int) mapAttribute(attributeWeights[index++], 0, 50, 50, 150, 150, 200);
+    heatVisionLength = (int) mapAttribute(attributeWeights[index++], 0, 10, 20, 60, 60, 120) + radius;
     currentHealth = health;
 
     for (int i = 0; i < states.length; i++) {
       // attributes common to all routines
-      states[i].forwardVisionLength = (int) mapAttribute(array[index++], 0, 10, 20, 60, 60, 120) + radius;
-      states[i].proximityDetectionRadius = (int) mapAttribute(array[index++], 0, 5, 10, 40, 50, 80) + radius;
+      states[i].forwardVisionLength = (int) mapAttribute(attributeWeights[index++], 0, 10, 20, 60, 60, 120) + radius;
+      states[i].proximityDetectionRadius = (int) mapAttribute(attributeWeights[index++], 0, 5, 10, 40, 50, 80) + radius;
 
       // attributes unique within each routine
       for (int j = 0; j < states[i].routines.length; j++) {
@@ -149,11 +150,11 @@ public class Enemy implements Cloneable {
         if (i == PATROL) {
           states[i].routines[j].rotationSpeed = mapAttribute(random(0, 1), 0, 0.05, 0.05, 0.25, 0.3, 0.5) * pow(-1, (int)random(1, 3));
         } else {
-          states[i].routines[j].rotationSpeed = mapAttribute(array[index++], 0, 0.05, 0.05, 0.25, 0.3, 0.5);
+          states[i].routines[j].rotationSpeed = mapAttribute(attributeWeights[index++], 0, 0.05, 0.05, 0.25, 0.3, 0.5);
         }
-        states[i].routines[j].shootCooldown = mapAttribute(array[index++], 4, 2, 2, 0.5, 0.25, 0.1);
+        states[i].routines[j].shootCooldown = mapAttribute(attributeWeights[index++], 4, 2, 2, 0.5, 0.25, 0.1);
         states[i].routines[j].bulletSpeed = mapAttribute(random(0, 1), 0, 1, 6, 10, 10, 15);
-        states[i].routines[j].bulletDamage = (int) mapAttribute(array[index++], 1, 2, 3, 8, 12, 15);
+        states[i].routines[j].bulletDamage = (int) mapAttribute(attributeWeights[index++], 1, 2, 3, 8, 12, 15);
       }
     }
   }

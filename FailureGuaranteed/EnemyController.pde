@@ -86,6 +86,11 @@ public class EnemyController {
         println("yeet");
       }
       
+      for (Enemy e : enemies) {
+        if (random(1) < e.relativeFitness) {
+          
+        }
+      }
       
       for (Enemy e : enemies) {
         println(e.fitness);
