@@ -1,4 +1,4 @@
-public class Enemy {
+public class Enemy implements Cloneable {
   public final int PATROL = 0, TRACK = 1, ATTACK = 2;
   private float x, y;
   private PVector direction;
@@ -25,6 +25,7 @@ public class Enemy {
 
   // genetic algorithm related:
   float fitness;
+  float relativeFitness;
   float attackTimer;
   float trackTimer;
   float lifetime;
@@ -405,8 +406,17 @@ public class Enemy {
       return a + TWO_PI;
     return a;
   }
+  
+  public Object clone() throws CloneNotSupportedException {
+    Enemy clone = (Enemy) super.clone();
+    clone.targetParticle = null;
+    for (int i = 0; i < states.length; i++) {
+      clone.states[i] = (State) states[i].clone();
+    }
+    return clone;
+  }
 
-  private class State {
+  private class State implements Cloneable {
     int typeOfState;
     float forwardVisionLength;
     float proximityDetectionRadius;
@@ -436,6 +446,14 @@ public class Enemy {
       for (int i = 0; i < numRoutines; i++) {
         routines[i] = new Routine();
       }
+    }
+    
+    public Object clone() throws CloneNotSupportedException {
+      State clone = (State)super.clone();
+      for (int i = 0; i < routines.length; i++) {
+        clone.routines[i] = (Routine) routines[i].clone();
+      }
+      return clone;
     }
 
     private class Routine {

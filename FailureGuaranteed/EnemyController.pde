@@ -39,6 +39,7 @@ public class EnemyController {
       // normalize attributes
       // get highest of each
 
+      // an alternate way to do this would be to use the totals, which would create a smaller difference between fitnesses
       float maxAttackTimer = -1;
       float maxTrackTimer = -1;
       float maxLifetime = -1;
@@ -60,6 +61,7 @@ public class EnemyController {
       println("Max Lifetime:" + maxLifetime);
       println("Max Damage Dealt:" + maxDamageDealt);
       
+      float totalFitness = 0;
       for (Enemy e : enemies) {
         e.fitness = 0;
         if (maxAttackTimer != 0)
@@ -70,12 +72,33 @@ public class EnemyController {
           e.fitness += (e.lifetime / maxLifetime) * lifetimeWeight;
         if (maxDamageDealt != 0)
           e.fitness += (e.damageDealt / maxDamageDealt) * damageDealtWeight;
+        totalFitness += e.fitness;
       }
-
+      
+      for (Enemy e : enemies) {
+        e.relativeFitness = e.fitness / totalFitness; 
+      }
+      
+      Enemy child = getFittestEnemy();
+      
       for (Enemy e : enemies) {
         println(e.fitness);
         e.respawn();
       }
     }
+  }
+  
+  private Enemy getFittestEnemy() {
+    float max = 0;
+    Enemy fittest = enemies.get(0);
+    
+    for (Enemy e : enemies) {
+      if (e.relativeFitness > max) {
+        max = e.relativeFitness;
+        fittest = e;
+      }
+    }
+    
+    return fittest;
   }
 }
