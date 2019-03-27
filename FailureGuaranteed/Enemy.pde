@@ -23,8 +23,9 @@ public class Enemy {
   int totalNumQuotaAttributes;
   private boolean disabled;
 
-  // genetic algorithm related:
+  // genetic algorithm related
   float fitness;
+  float relativeFitness;
   float attackTimer;
   float trackTimer;
   float lifetime;
@@ -438,7 +439,7 @@ public class Enemy {
       }
     }
 
-    private class Routine {
+    private class Routine implements Cloneable {
       // routine specific
       float duration;
 
@@ -450,6 +451,10 @@ public class Enemy {
       float shootCooldown;
       float bulletSpeed;
       int bulletDamage;
+      
+      public Object clone() throws CloneNotSupportedException {
+        return (Routine)super.clone();
+      }
     }
   }
 }
