@@ -12,7 +12,6 @@ int wave;
 float gameTimer;
 
 void setup() {
-  //fullScreen();
   size(1600, 800);
   timer = new Timer();
   heatTrail = new HeatTrail();
