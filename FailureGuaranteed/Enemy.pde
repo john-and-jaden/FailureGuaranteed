@@ -317,16 +317,11 @@ public class Enemy implements Cloneable {
     x = width - random(radius, width / 6);
     y = height / 2 + random(-height / 3, height / 3); 
     direction = new PVector(-1, 0);
-    radius = random(8, 16);
-    health = (int) random(3, 6);
-    disengageDelay = 1;
 
     // Don't change this
-    initStates();
     currentState = PATROL;
     currentRoutine = 0;
     disengageTimer = 0;
-    currentState = 0;
     currentHealth = health;
     disabled = false;
   }

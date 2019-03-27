@@ -2,6 +2,7 @@ public class EnemyController {
   public ArrayList<Enemy> enemies;
   private int numberEnemies;
 
+  float attributeTransferAmount;
   float attackTimerWeight;
   float trackTimerWeight;
   float lifetimeWeight;
@@ -10,6 +11,7 @@ public class EnemyController {
   EnemyController() {
     // You can modify this
     numberEnemies = 4;
+    attributeTransferAmount = 0.05;
     attackTimerWeight = 0.8;
     trackTimerWeight = 0.6;
     lifetimeWeight = 0.3;
@@ -56,10 +58,10 @@ public class EnemyController {
           maxDamageDealt = e.damageDealt;
       }
       
-      println("Max Attack Timer:" + maxAttackTimer);
-      println("Max Track Timer:" + maxTrackTimer);
-      println("Max Lifetime:" + maxLifetime);
-      println("Max Damage Dealt:" + maxDamageDealt);
+      //println("Max Attack Timer:" + maxAttackTimer);
+      //println("Max Track Timer:" + maxTrackTimer);
+      //println("Max Lifetime:" + maxLifetime);
+      //println("Max Damage Dealt:" + maxDamageDealt);
       
       float totalFitness = 0;
       for (Enemy e : enemies) {
@@ -76,40 +78,68 @@ public class EnemyController {
       }
       
       for (Enemy e : enemies) {
-        e.relativeFitness = e.fitness / totalFitness; 
+        e.relativeFitness = e.fitness / totalFitness;
+        println(e.relativeFitness);
       }
       
-      Enemy child = null;
+      Enemy child = new Enemy();
       try {
-        child = (Enemy) getFittestEnemy().clone();
+        child = (Enemy) getMostFitEnemy().clone();
       } catch(CloneNotSupportedException e) {
         println("yeet");
       }
       
       for (Enemy e : enemies) {
-        if (random(1) < e.relativeFitness) {
+        // Each enemy has a chance to transfer stats based on their relative fitness
+        if (random(1) < e.relativeFitness && e != getMostFitEnemy()) {
+          println("Stats transferred from enemy with " + e.relativeFitness + " fitness.");
           
+          // get the highest and lowest stat from that enemy
+          int high = e.getIndexOfHighestAttribute();
+          int low = e.getIndexOfLowestAttribute();
+          float change = min(attributeTransferAmount, child.attributeWeights[low], 1-child.attributeWeights[high]);
+          
+          // decrease lowest and increase highest
+          child.attributeWeights[high] += change;
+          child.attributeWeights[low] -= change;
         }
       }
       
+      // This is to improve code quality (and performance)
+      Enemy runt = getLeastFitEnemy();
+      enemies.set(enemies.indexOf(runt), child);
+      
       for (Enemy e : enemies) {
-        println(e.fitness);
         e.respawn();
       }
     }
   }
   
-  private Enemy getFittestEnemy() {
-    float max = 0;
-    Enemy fittest = enemies.get(0);
+  private Enemy getMostFitEnemy() {
+    float max = enemies.get(0).relativeFitness;
+    Enemy result = enemies.get(0);
     
     for (Enemy e : enemies) {
       if (e.relativeFitness > max) {
         max = e.relativeFitness;
-        fittest = e;
+        result = e;
       }
     }
     
-    return fittest;
+    return result;
+  }
+  
+  private Enemy getLeastFitEnemy() {
+    float min = enemies.get(0).relativeFitness;
+    Enemy result = enemies.get(0);
+    
+    for (Enemy e : enemies) {
+      if (e.relativeFitness > min) {
+        min = e.relativeFitness;
+        result = e;
+      }
+    }
+    
+    return result;
   }
 }
