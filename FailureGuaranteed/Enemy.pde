@@ -416,6 +416,30 @@ public class Enemy implements Cloneable {
     }
     return clone;
   }
+  
+  public int getIndexOfHighestAttribute() {
+    float max = attributeWeights[0];
+    int index = 0;
+    for(int i = 0; i < attributeWeights.length; i++) {
+     if(attributeWeights[i] > max) {
+      max = attributeWeights[i]; 
+      index = i;
+     }
+    }
+    return index;
+  }
+  
+  public int getIndexOfLowestAttribute() {
+    float min = attributeWeights[0];
+    int index = 0;
+    for(int i = 0; i < attributeWeights.length; i++) {
+     if(attributeWeights[i] < min) {
+      min = attributeWeights[i]; 
+      index = i;
+     }
+    }
+    return index;
+  }
 
   private class State implements Cloneable {
     int typeOfState;
