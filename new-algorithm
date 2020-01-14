@@ -1,0 +1,31 @@
+There are 'n' stats with 'm' ranks. Each enemy has 'x' (x < n*m) points to spend amongst these stats.
+
+There is an array which determines the favourability (0-1) of each stat. This starts at 0.5 for each stat.
+
+~
+
+After each round of the game, the enemy receives a score 'y'. This score is compared to the previous score the enemy received in the last round, and the favourability of the stats will either go up or down depending on whether the enemy improved or not.
+
+For example, if the enemy spent many points in stat A and did well, the favourability of stat A would increase for that enemy.
+
+This can be further expanded by using the % improvement to affect how much the favourability changes each round.
+
+Since this is a genetic algorithm, there would also be a % chance to modify the favourability of one of the stats randomly each round.
+
+~
+
+The enemy spends points by saying:
+
+For each point 'x' the enemy can spend,
+	Choose a stat at random from the list of stats
+	Add 1 to that stat
+
+To choose a stat at random, a number between 0 and the total favourability is generated and mapped to the appropriate stat in the array.
+
+For example, if all the favourabilities are 0.5, and there are 6 stats, a number between 0-3 would be generated. If the number is 2.3, it will be mapped to the 5th stat as follows:
+[0.0 - 0.5]: A
+[0.0 - 1.0]: B
+[1.0 - 1.5]: C
+[1.5 - 2.0]: D
+[2.0 - 2.5]: E
+[2.5 - 3.0]: F
