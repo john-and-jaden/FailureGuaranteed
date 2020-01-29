@@ -102,10 +102,12 @@ public class Enemy implements Cloneable {
     states[1] = new State(TRACK);
     states[2] = new State(ATTACK);
 
-    float quota = (int)(totalNumQuotaAttributes * 0.3);
+    //float quota = (int)(totalNumQuotaAttributes * 0.3);
+    float quota = 12;
     float remainder = quota;
 
     // generate array of numbers
+    println("New Enemy");
     attributeWeights = new float[totalNumQuotaAttributes];
     int currentIndex = 0;
     while (remainder > 0) {
@@ -118,6 +120,7 @@ public class Enemy implements Cloneable {
       if (currentIndex > attributeWeights.length - 1) {
         currentIndex = 0;
       }
+      println(assigningValue);
     }
     
     // randomize array order
@@ -377,6 +380,15 @@ public class Enemy implements Cloneable {
     textAlign(CENTER, CENTER);
     fill(0);
     text(currentHealth, x, y + radius*2);
+    
+    // Debug text
+    float d = 20;
+    textSize(d);
+    textAlign(CENTER, CENTER);
+    fill(0);
+    for (int i = 0; i < attributeWeights.length; i++) {
+      text(attributeWeights[i], x, y + d*(i+2)); 
+    }
 
     if (hasShot) {
       hasShot = false;

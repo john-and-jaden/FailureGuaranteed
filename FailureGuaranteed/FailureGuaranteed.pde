@@ -1,3 +1,5 @@
+import java.util.EnumMap;
+
 public final int GAME_SCENE = 0, TRANSITION_SCENE = 1, DEATH_SCENE = 2;
 
 Player player;

@@ -86,7 +86,7 @@ public class EnemyController {
       try {
         child = (Enemy) getMostFitEnemy().clone();
       } catch(CloneNotSupportedException e) {
-        println("yeet");
+        println("Clone not supported exception");
       }
       
       for (Enemy e : enemies) {
